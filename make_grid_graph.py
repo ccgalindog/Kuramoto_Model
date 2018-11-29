@@ -15,6 +15,18 @@ from scipy.sparse import csr_matrix
 from scipy.optimize import minimize
 import example_grid_cases as gridcase
 
+# In this file you find the following functions:
+# build_2node_graph
+# build_quasiregular_graph
+# build_random_graph
+# build_smallworld_graph
+# build_gridcase_graph
+# SP_model
+# EN_model
+# SM_model
+
+#####################################################################################################################
+
 
 
 def build_2node_graph(net_name, powers, powers_disturb, alfas, to_plot):
@@ -629,7 +641,7 @@ def get_kuramoto_net(A, K_hat, Gamm, est_dyn, model, ref_freq, gtb):
 ####################################
 
 
-def build_graph(case, model, ref_freq, k_alt_ini, k_alt_fin, k_alt_step, mag_d, re_d, im_d, start_speed, to_plot):
+def build_gridcase_graph(case, model, ref_freq, k_alt_ini, k_alt_fin, k_alt_step, mag_d, re_d, im_d, start_speed, to_plot):
 '''
 This function creates a graph from a real power grid given by a pypsa case 
 INPUT:
