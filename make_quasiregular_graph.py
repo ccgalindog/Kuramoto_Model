@@ -19,6 +19,8 @@ powers_disturb: <List> - Power at each node after a disturbance.
 alfas: <List> - Damping at each node.
 delt_d: <Double> - Fraction of generator nodes that are assigned as 'small generators'.
 to_plot: <Boolean> - If want to plot the output graph.
+OUTPUT:
+A text file at Networks folder.
 '''
 
 	assert (((int(np.sqrt(consumers)))**2) == consumers ), "Consumers value must be a perfect square number!!"
