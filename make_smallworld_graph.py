@@ -8,35 +8,39 @@ from matplotlib.backends.backend_pdf import PdfPages
 import click
 import scipy as sp
 
-@click.command()
-@click.option("-nodes", default = 10)
-@click.option("-neighbors", default = 4)
-@click.option("-pth", default = 0.1)
-@click.option("-net_name", default = "smallworld_net_0")
-@click.option("-powers", default = "a")
-@click.option("-powers_disturb", default = "a")
-@click.option("-alfas", default = "a")
-@click.option("-delt_d", default = 0.5)
+def build_graph(nodes, neighbors, pth, net_name, powers, powers_disturb, alfas, delt_d, to_plot):
+'''
+Create a Wattss-Strogatz graph where nodes are located initially in a ring connected to some amount neighbors and then connections are relinked with some probability pth.
+INPUT:
+nodes: <Int> - Total amount of nodes.
+neighbors: <Int> - Amount of initial neighbors for each node in the ring. 
+pth: <Double> - Rewiring probability.
+net_name: <String> - Name of the network. 
+powers: <List> - Default power at each node.
+powers_disturb: <List> - Power at each node after a disturbance.
+alfas: <List> - Damping at each node.
+delt_d: <Double> - Fraction of generator nodes that are assigned as 'small generators'.
+to_plot: <Boolean> - If want to plot the output graph.
+OUTPUT:
+A text file at Networks folder.
+'''
+#	powers = powers.replace("[", "")
+#	powers = powers.replace("]", "")
+#	powers = powers.replace(",", "")
+#	powers = powers.split("_")
+#	powers = [float(a_power) for a_power in powers]
 
-def main(nodes, neighbors, pth, net_name, powers, powers_disturb, alfas, delt_d):
+#	powers_disturb = powers_disturb.replace("[", "")
+#	powers_disturb = powers_disturb.replace("]", "")
+#	powers_disturb = powers_disturb.replace(",", "")
+#	powers_disturb = powers_disturb.split("_")
+#	powers_disturb = [float(a_power) for a_power in powers_disturb]
 
-	powers = powers.replace("[", "")
-	powers = powers.replace("]", "")
-	powers = powers.replace(",", "")
-	powers = powers.split("_")
-	powers = [float(a_power) for a_power in powers]
-
-	powers_disturb = powers_disturb.replace("[", "")
-	powers_disturb = powers_disturb.replace("]", "")
-	powers_disturb = powers_disturb.replace(",", "")
-	powers_disturb = powers_disturb.split("_")
-	powers_disturb = [float(a_power) for a_power in powers_disturb]
-
-	alfas = alfas.replace("[", "")
-	alfas = alfas.replace("]", "")
-	alfas = alfas.replace(",", "")
-	alfas = alfas.split("_")
-	alfas = [float(an_alfa) for an_alfa in alfas]
+#	alfas = alfas.replace("[", "")
+#	alfas = alfas.replace("]", "")
+#	alfas = alfas.replace(",", "")
+#	alfas = alfas.split("_")
+#	alfas = [float(an_alfa) for an_alfa in alfas]
 
 	N = nodes
 
@@ -77,45 +81,38 @@ def main(nodes, neighbors, pth, net_name, powers, powers_disturb, alfas, delt_d)
 	 
 	file.close() 
 
+	if (to_plot):
 
-	fr = plt.figure(figsize=(8,8))
-	ax1 = fr.add_subplot(111)
-	big_gen_list = list()
-	small_gen_list = list()
-	consumer_list = list()
+		fr = plt.figure(figsize=(8,8))
+		ax1 = fr.add_subplot(111)
+		big_gen_list = list()
+		small_gen_list = list()
+		consumer_list = list()
 
-	P = np.array(P)
-	big_power = np.max(P[:,2])
+		P = np.array(P)
+		big_power = np.max(P[:,2])
 
-	for a_node in range(len(P)):
-		if (P[a_node][2] < 0.0):
-			consumer_list.append(a_node)
-		elif ((P[a_node][2] == big_power) and (delt_d < 1.0)):
-			big_gen_list.append(a_node)
-		else:
-			small_gen_list.append(a_node)
+		for a_node in range(len(P)):
+			if (P[a_node][2] < 0.0):
+				consumer_list.append(a_node)
+			elif ((P[a_node][2] == big_power) and (delt_d < 1.0)):
+				big_gen_list.append(a_node)
+			else:
+				small_gen_list.append(a_node)
 
-	
-
-
-	# print(big_power)
-	# print(big_gen_list, '\n')
-	# print(small_gen_list, '\n')
-	# print(consumer_list)
-
-	pos=nx.circular_layout(IM_Grapho)
-	nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=big_gen_list, node_color='crimson', node_size=100, alpha=0.9, label = "Big Generators")
-	nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=small_gen_list, node_color='yellowgreen', node_size=70, alpha=0.9, label = "Small Generators")
-	nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=consumer_list, node_color='indigo', node_size=50, alpha=0.9, label = "Consumers")
-	plt.legend(loc="best", scatterpoints=1)
-	nx.draw_networkx_edges(IM_Grapho, pos, width=1.0,alpha=0.5)
-	ax1.set_xticklabels('')
-	ax1.set_yticklabels('')
-	ax1.tick_params(axis='both', which='both', length = 0, bottom=False, top=False, labelbottom=False)
-	plt.tight_layout()
-	fr.savefig("Images/" + net_name + "_.pdf", bbox_inches='tight')
-	plt.close()
+		pos=nx.circular_layout(IM_Grapho)
+		nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=big_gen_list, node_color='crimson', node_size=100, alpha=0.9, label = "Big Generators")
+		nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=small_gen_list, node_color='yellowgreen', node_size=70, alpha=0.9, label = "Small Generators")
+		nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=consumer_list, node_color='indigo', node_size=50, alpha=0.9, label = "Consumers")
+		plt.legend(loc="best", scatterpoints=1)
+		nx.draw_networkx_edges(IM_Grapho, pos, width=1.0,alpha=0.5)
+		ax1.set_xticklabels('')
+		ax1.set_yticklabels('')
+		ax1.tick_params(axis='both', which='both', length = 0, bottom=False, top=False, labelbottom=False)
+		plt.tight_layout()
+		fr.savefig("Images/" + net_name + "_.pdf", bbox_inches='tight')
+		plt.close()
 
 
-if __name__ == '__main__':
-	main()
+#if __name__ == '__main__':
+#	main()
