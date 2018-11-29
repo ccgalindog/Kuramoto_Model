@@ -5,6 +5,7 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from matplotlib.transforms import blended_transform_factory	
+from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.ticker as plticker
 from glob import glob
 import click
@@ -137,8 +138,63 @@ result_folder: <String> - Folder where all the result files are located.
 
 
 
-
-
-
+def plot_oscillator_circle(result_file, nodes_to_plot, jumps, stop_time, t_disturb, t_recover, ki, colors_to_plot):
+'''
+Plot time evolution as points rotating in a unit circle.
+INPUT:
+result_file: <String> - Filename.
+nodes_to_plot: <List> - Nodes you want to watch.
+jumps: <Int> - Jumps taken in time to choose points to plot.
+stop_time: <Double> - When to stop plotting.
+t_disturb: <Double> - Time at which a disturbance occurred (if none, use t_disturb > stop_time).
+t_recover: <Double> - Time at which a disturbance finished (if none, use t_recover > stop_time).
+ki: <Double> - Coupling stregth used in the simulation.
+colors_to_plot: <List> - Color given to each node.
+OUTPUT:
+Some PNG images in the folder To_Gif, each one showing the state of the system at some point in time.
+'''
+	x_data = np.loadtxt(result_file)
+	x = x_data[:,1:-2]
+	N = int((x.shape[1])/2)
+	t = x_data[:,0]
+	Re_r = x_data[:,-2]
+	Im_r = x_data[:,-1]
+	Mag_r = np.sqrt(np.square(Re_r) + np.square(Im_r))
+	phases = ( x[:,0:N] + np.pi) % (2 * np.pi ) - np.pi
+	phase_velocity = x[:,N:-1]
+	colors = np.random.rand(N,3)
+	m_indx = 0
+	for my_time in range(len(t)):
+		if ((my_time % jumps == 0) and (t[my_time] <= stop_time)) or ((2*my_time % jumps == 0) and (t[my_time] <= t_recover) and (t[my_time] >= t_disturb)):
+			fig = plt.figure()
+			ax = fig.add_subplot(111)
+			circle1 = plt.Circle((0, 0), 1, color='y', alpha = 0.5)
+			plt.gcf().gca().add_artist(circle1)
+			i = 0
+			for each_node in nodes_to_plot:
+				x_act = np.cos(phases[my_time, each_node])
+				y_act = np.sin(phases[my_time, each_node])
+				plt.scatter(x_act, y_act, color = colors_to_plot[i], s = 50.0, label = r"$i$: {}".format(each_node))
+				plt.plot([0.0, x_act], [0.0, y_act], color = colors_to_plot[i], lw = 2.0)
+				i = i + 1
+			ax.set_title(r"Time: %.2f $\rm{[s]}$     $\kappa = $ %.2f"%(t[my_time], ki))
+			if ((t[my_time] >= t_disturb) and (t[my_time] <= t_recover)): 
+				plt.text(0.8, 1.0, "Disturbance", size=10, ha="center", va="center", bbox=dict(boxstyle="round", ec=(1., 0.5, 0.5), fc=(1., 0.8, 0.8)))
+			ax.set_xlim([-1.2, 1.2])
+			ax.set_ylim([-1.2, 1.2])
+			ax.set_yticklabels([])
+			ax.set_xticklabels([])
+			plt.legend(loc='center left', numpoints = 1, bbox_to_anchor=(1, 0.5))
+			ax.set_xlabel(r"$x$   $\rm{[a.u.]}$")
+			ax.set_ylabel(r"$y$   $\rm{[a.u.]}$")
+			ax.set_aspect("equal")
+			plt.tight_layout()
+			plt.savefig("To_Gif/{}.png".format(m_indx))
+			plt.close()
+			m_indx = m_indx + 1
+			
+			
+			
+######################################################################################################################
 
 
