@@ -327,7 +327,7 @@ def get_kuramoto_net(A, K_hat, Gamm, est_dyn, model, ref_freq, gtb):
 	return K, P, alpha, Gamm
 
 
-def build_graph(case, model, ref_freq, k_alt_ini, k_alt_fin, k_alt_step, mag_d, re_d, im_d, start_speed):
+def build_graph(case, model, ref_freq, k_alt_ini, k_alt_fin, k_alt_step, mag_d, re_d, im_d, start_speed, to_plot):
 '''
 This function creates a graph from a real power grid given by a pypsa case 
 INPUT:
@@ -340,7 +340,8 @@ k_alt_step: <Double> - Step taken for each disturbance on Y_bus.
 mag_d: <Double> - Number which multiplies the magnitude of the case branches.
 re_d: <Double> - Number which multiplies the real part of the case branches.
 im_d: <Double> - Number which multiplies the imaginary part of the case branches.
-start_speed: <String> - Initial condition for the angular velocity. Enter either "zeros" or "random". 
+start_speed: <String> - Initial condition for the angular velocity. Enter either "zeros" or "random".
+to_plot: <Boolean> - If want to plot the output graph.
 '''
 
 	if (case == "case9"):
@@ -431,25 +432,24 @@ start_speed: <String> - Initial condition for the angular velocity. Enter either
 
 		big_power = np.max(Pi)
 
-		for a_node in range(len(Pi)):
-			if (Pi[a_node] < 0.0):
-				consumer_list.append(a_node)
-			else:
-				small_gen_list.append(a_node)
-		pos=nx.spring_layout(IM_Grapho)
-		nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=big_gen_list, node_color='crimson', node_size=100, alpha=0.9, label = "Big Generators")
-		nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=small_gen_list, node_color='yellowgreen', node_size=70, alpha=0.9, label = "Small Generators")
-		nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=consumer_list, node_color='indigo', node_size=50, alpha=0.9, label = "Consumers")
-		plt.legend(loc="best", scatterpoints=1)
-		nx.draw_networkx_edges(IM_Grapho, pos, width=1.0,alpha=0.5)
-		ax1.set_xticklabels('')
-		ax1.set_yticklabels('')
-		ax1.tick_params(axis='both', which='both', length = 0, bottom=False, top=False, labelbottom=False)
-		plt.tight_layout()
-		fr.savefig("Images/" + net_name + "_.pdf", bbox_inches='tight')
-		plt.close()
-
-
+		if (to_plot):
+			for a_node in range(len(Pi)):
+				if (Pi[a_node] <= 0.0):
+					consumer_list.append(a_node)
+				else:
+					small_gen_list.append(a_node)
+			pos=nx.spring_layout(IM_Grapho)
+			nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=big_gen_list, node_color='crimson', node_size=100, alpha=0.9, label = "Big Generators")
+			nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=small_gen_list, node_color='yellowgreen', node_size=70, alpha=0.9, label = "Small Generators")
+			nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=consumer_list, node_color='indigo', node_size=50, alpha=0.9, label = "Consumers")
+			plt.legend(loc="best", scatterpoints=1)
+			nx.draw_networkx_edges(IM_Grapho, pos, width=1.0,alpha=0.5)
+			ax1.set_xticklabels('')
+			ax1.set_yticklabels('')
+			ax1.tick_params(axis='both', which='both', length = 0, bottom=False, top=False, labelbottom=False)
+			plt.tight_layout()
+			fr.savefig("Images/" + net_name + "_.pdf", bbox_inches='tight')
+			plt.close()
 
 		k_act = k_act + k_alt_step
 
