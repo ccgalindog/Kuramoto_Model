@@ -8,31 +8,35 @@ from matplotlib.backends.backend_pdf import PdfPages
 import click
 import scipy as sp
 
-@click.command()
-@click.option("-net_name", default = "2node_net_0")
-@click.option("-powers", default = "[1.0,_-1.0]")
-@click.option("-powers_disturb", default = "[1.0,_-1.0]")
-@click.option("-alfas", default = "[1.0,_1.0]")
+def build_graph(net_name, powers, powers_disturb, alfas, to_plot):
+'''
+Create a Wattss-Strogatz graph where nodes are located initially in a ring connected to some amount neighbors and then connections are relinked with some probability pth.
+INPUT:
+net_name: <String> - Name of the network. 
+powers: <List> (2 elements) - Default power at each node.
+powers_disturb: <List> (2 elements) - Power at each node after a disturbance.
+alfas: <List> (2 elements) - Damping at each node.
+to_plot: <Boolean> - If want to plot the output graph.
+OUTPUT:
+A text file at Networks folder.
+'''
+#	powers = powers.replace("[", "")
+#	powers = powers.replace("]", "")
+#	powers = powers.replace(",", "")
+#	powers = powers.split("_")
+#	powers = [float(a_power) for a_power in powers]
 
-def main(net_name, powers, powers_disturb, alfas):
+#	powers_disturb = powers_disturb.replace("[", "")
+#	powers_disturb = powers_disturb.replace("]", "")
+#	powers_disturb = powers_disturb.replace(",", "")
+#	powers_disturb = powers_disturb.split("_")
+#	powers_disturb = [float(a_power) for a_power in powers_disturb]
 
-	powers = powers.replace("[", "")
-	powers = powers.replace("]", "")
-	powers = powers.replace(",", "")
-	powers = powers.split("_")
-	powers = [float(a_power) for a_power in powers]
-
-	powers_disturb = powers_disturb.replace("[", "")
-	powers_disturb = powers_disturb.replace("]", "")
-	powers_disturb = powers_disturb.replace(",", "")
-	powers_disturb = powers_disturb.split("_")
-	powers_disturb = [float(a_power) for a_power in powers_disturb]
-
-	alfas = alfas.replace("[", "")
-	alfas = alfas.replace("]", "")
-	alfas = alfas.replace(",", "")
-	alfas = alfas.split("_")
-	alfas = [float(an_alfa) for an_alfa in alfas]
+#	alfas = alfas.replace("[", "")
+#	alfas = alfas.replace("]", "")
+#	alfas = alfas.replace(",", "")
+#	alfas = alfas.split("_")
+#	alfas = [float(an_alfa) for an_alfa in alfas]
 
 	N = 2
 	K = np.array([[0, 1], [1, 0]])
@@ -70,34 +74,34 @@ def main(net_name, powers, powers_disturb, alfas):
 	 
 	file.close() 
 
+	if (to_plot):
+		fr = plt.figure(figsize=(8,8))
+		ax1 = fr.add_subplot(111)
+		big_gen_list = list()
+		small_gen_list = list()
+		consumer_list = list()
 
-	fr = plt.figure(figsize=(8,8))
-	ax1 = fr.add_subplot(111)
-	big_gen_list = list()
-	small_gen_list = list()
-	consumer_list = list()
+		P = np.array(P)
+		big_power = np.max(P[:,2])
 
-	P = np.array(P)
-	big_power = np.max(P[:,2])
+		for a_node in range(len(P)):
+			if (P[a_node][2] < 0.0):
+				consumer_list.append(a_node)
+			else:
+				big_gen_list.append(a_node)
 
-	for a_node in range(len(P)):
-		if (P[a_node][2] < 0.0):
-			consumer_list.append(a_node)
-		else:
-			big_gen_list.append(a_node)
-
-	pos=nx.circular_layout(IM_Grapho)
-	nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=big_gen_list, node_color='crimson', node_size=100, alpha=0.9, label = "Generator")
-	nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=consumer_list, node_color='indigo', node_size=50, alpha=0.9, label = "Consumer")
-	plt.legend(loc="best", scatterpoints=1)
-	nx.draw_networkx_edges(IM_Grapho, pos, width=1.0,alpha=0.5)
-	ax1.set_xticklabels('')
-	ax1.set_yticklabels('')
-	ax1.tick_params(axis='both', which='both', length = 0, bottom=False, top=False, labelbottom=False)
-	plt.tight_layout()
-	fr.savefig("Images/" + net_name + "_.pdf", bbox_inches='tight')
-	plt.close()
+		pos=nx.circular_layout(IM_Grapho)
+		nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=big_gen_list, node_color='crimson', node_size=100, alpha=0.9, label = "Generator")
+		nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=consumer_list, node_color='indigo', node_size=50, alpha=0.9, label = "Consumer")
+		plt.legend(loc="best", scatterpoints=1)
+		nx.draw_networkx_edges(IM_Grapho, pos, width=1.0,alpha=0.5)
+		ax1.set_xticklabels('')
+		ax1.set_yticklabels('')
+		ax1.tick_params(axis='both', which='both', length = 0, bottom=False, top=False, labelbottom=False)
+		plt.tight_layout()
+		fr.savefig("Images/" + net_name + "_.pdf", bbox_inches='tight')
+		plt.close()
 
 
-if __name__ == '__main__':
-	main()
+#if __name__ == '__main__':
+#	main()
