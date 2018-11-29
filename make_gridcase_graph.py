@@ -327,22 +327,21 @@ def get_kuramoto_net(A, K_hat, Gamm, est_dyn, model, ref_freq, gtb):
 	return K, P, alpha, Gamm
 
 
-
-
-@click.command()
-@click.option("-case", default = "case9")
-@click.option("-model", default = "sm")
-@click.option("-ref_freq", default = 60)
-@click.option("-k_alt_ini", default = 1.0)
-@click.option("-k_alt_fin", default = 2.0)
-@click.option("-k_alt_step", default = 2.0)
-@click.option("-mag_d", default = 1.0)
-@click.option("-re_d", default = 0.0)
-@click.option("-im_d", default = 1.0)
-@click.option("-start_speed", default = "zeros")
-
-
-def main(case, model, ref_freq, k_alt_ini, k_alt_fin, k_alt_step, mag_d, re_d, im_d, start_speed):
+def build_graph(case, model, ref_freq, k_alt_ini, k_alt_fin, k_alt_step, mag_d, re_d, im_d, start_speed):
+'''
+This function creates a graph from a real power grid given by a pypsa case 
+INPUT:
+case: <String> - Grid case name. Example: "case9".
+model: <String> - either "sm", "sp" or "en".
+ref_freq: <Double> - Reference frequency.
+k_alt_ini: <Double> - Initial disturbance for the Y_bus. 
+k_alt_fin: <Double> - Final disturbance for the Y_bus.
+k_alt_step: <Double> - Step taken for each disturbance on Y_bus.
+mag_d: <Double> - Number which multiplies the magnitude of the case branches.
+re_d: <Double> - Number which multiplies the real part of the case branches.
+im_d: <Double> - Number which multiplies the imaginary part of the case branches.
+start_speed: <String> - Initial condition for the angular velocity. Enter either "zeros" or "random". 
+'''
 
 	if (case == "case9"):
 		mpc, est_dyn = gridcase.case9(mag_d, re_d, im_d)
@@ -365,9 +364,9 @@ def main(case, model, ref_freq, k_alt_ini, k_alt_fin, k_alt_step, mag_d, re_d, i
 			A, K_hat, Gamm, phi, Node_Type = SP_model(mpc2, est_dyn, Y0_now)    
 
 		gtb = np.unique(mpc2[0]["gen"][:, GEN_BUS])
-		
+
 		K, Pi, alpha, Gamm = get_kuramoto_net(A, K_hat, Gamm, est_dyn, model, ref_freq, gtb) 
-		
+
 		if (model == "sm"):
 			res = minimize(kuramoto_weight, phi, args = (Pi, K, Gamm), method='nelder-mead', options={'xtol': 1e-6, 'disp': True})
 			phi = res.x
@@ -405,7 +404,7 @@ def main(case, model, ref_freq, k_alt_ini, k_alt_fin, k_alt_step, mag_d, re_d, i
 		file.write("Gamma \n")
 		for i in range(len(gamma_list)):
 			file.write("{} {} {} \n".format(gamma_list[i][0], gamma_list[i][1], gamma_list[i][2])) 
- 
+
 		file.close() 
 
 		out_file = "Initial_States/initstate_" + net_name + "_.txt"
@@ -454,5 +453,5 @@ def main(case, model, ref_freq, k_alt_ini, k_alt_fin, k_alt_step, mag_d, re_d, i
 
 		k_act = k_act + k_alt_step
 
-if __name__ == '__main__':
-	main()
+#if __name__ == '__main__':
+#	main()
