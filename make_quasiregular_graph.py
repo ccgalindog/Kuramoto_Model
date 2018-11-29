@@ -7,16 +7,19 @@ import warnings
 from matplotlib.backends.backend_pdf import PdfPages
 import click
 
-@click.command()
-@click.option("-nodes", default = 2)
-@click.option("-consumers", default = 1)
-@click.option("-net_name", default = "quasireg_net_0")
-@click.option("-powers", default = "a")
-@click.option("-powers_disturb", default = "a")
-@click.option("-alfas", default = "a")
-@click.option("-delt_d", default = 0.5)
-
-def main(nodes, consumers, net_name, powers, powers_disturb, alfas, delt_d):
+def build_graph(nodes, consumers, net_name, powers, powers_disturb, alfas, delt_d, to_plot):
+'''
+Create a graph where consumers are located in a square lattice and generators are located randomly and connected to 4 nearest neighbours.
+INPUT:
+nodes: <Int> - Total amount of nodes.
+consumers: <Int> - Amount of consumers. Must be a perfect square number and must be lower than 'nodes'. 
+net_name: <String> - Name of the network. 
+powers: <List> - Default power at each node.
+powers_disturb: <List> - Power at each node after a disturbance.
+alfas: <List> - Damping at each node.
+delt_d: <Double> - Fraction of generator nodes that are assigned as 'small generators'.
+to_plot: <Boolean> - If want to plot the output graph.
+'''
 
 	assert (((int(np.sqrt(consumers)))**2) == consumers ), "Consumers value must be a perfect square number!!"
 
@@ -135,39 +138,41 @@ def main(nodes, consumers, net_name, powers, powers_disturb, alfas, delt_d):
 	file.close() 
 
 
+	if (to_plot):
 
-	IM_Grapho = nx.from_numpy_matrix(K)
+		IM_Grapho = nx.from_numpy_matrix(K)
 
-	fr = plt.figure(figsize=(8,8))
-	ax1 = fr.add_subplot(111)
-	big_gen_list = list()
-	small_gen_list = list()
-	consumer_list = list()
+		fr = plt.figure(figsize=(8,8))
+		ax1 = fr.add_subplot(111)
+		big_gen_list = list()
+		small_gen_list = list()
+		consumer_list = list()
 
-	P = np.array(P)
-	big_power = np.max(P[:,2])
-
-	for a_node in range(len(P)):
-		if (P[a_node][2] < 0.0):
-			consumer_list.append(a_node)
-		elif ((P[a_node][2] == big_power) and (delt_d < 1.0)):
-			big_gen_list.append(a_node)
-		else:
-			small_gen_list.append(a_node)
-
-	pos=nx.spring_layout(IM_Grapho)
-	nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=big_gen_list, node_color='crimson', node_size=100, alpha=0.9, label = "Big Generators")
-	nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=small_gen_list, node_color='yellowgreen', node_size=70, alpha=0.9, label = "Small Generators")
-	nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=consumer_list, node_color='indigo', node_size=50, alpha=0.9, label = "Consumers")
-	nx.draw_networkx_edges(IM_Grapho, pos, width=1.0,alpha=0.5)
-	plt.legend(loc="best", scatterpoints=1)
-	ax1.set_xticklabels('')
-	ax1.set_yticklabels('')
-	ax1.tick_params(axis='both', which='both', length = 0, bottom=False, top=False, labelbottom=False)
-	plt.tight_layout()
-	fr.savefig("Images/" + net_name + "_.pdf", bbox_inches='tight')
-	plt.close()
+		P = np.array(P)
+		big_power = np.max(P[:,2])
 
 
-if __name__ == '__main__':
-	main()
+		for a_node in range(len(P)):
+			if (P[a_node][2] < 0.0):
+				consumer_list.append(a_node)
+			elif ((P[a_node][2] == big_power) and (delt_d < 1.0)):
+				big_gen_list.append(a_node)
+			else:
+				small_gen_list.append(a_node)
+
+		pos=nx.spring_layout(IM_Grapho)
+		nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=big_gen_list, node_color='crimson', node_size=100, alpha=0.9, label = "Big Generators")
+		nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=small_gen_list, node_color='yellowgreen', node_size=70, alpha=0.9, label = "Small Generators")
+		nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=consumer_list, node_color='indigo', node_size=50, alpha=0.9, label = "Consumers")
+		nx.draw_networkx_edges(IM_Grapho, pos, width=1.0,alpha=0.5)
+		plt.legend(loc="best", scatterpoints=1)
+		ax1.set_xticklabels('')
+		ax1.set_yticklabels('')
+		ax1.tick_params(axis='both', which='both', length = 0, bottom=False, top=False, labelbottom=False)
+		plt.tight_layout()
+		fr.savefig("Images/" + net_name + "_.pdf", bbox_inches='tight')
+		plt.close()
+
+
+#if __name__ == '__main__':
+#	main()
