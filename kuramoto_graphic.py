@@ -15,6 +15,7 @@ import click
 # plot_phaseplane_2node
 # plot_oscillator_circle
 # plot_a_graph
+# build_circle_gif
 
 
 
@@ -208,16 +209,11 @@ net_file: <String> - Filename of the network.
 
 '''
 	created_file = "Networks/{}_.txt".format(net_name)
-
 	os.system("cp {} {}".format(net_file, created_file))
-
 	net_name = net_file.replace("Example_Cases/", "")
 	net_name = net_name.replace("_.txt", "")
 	delt_d = 0.5
-
 	lines = [line.rstrip('\n') for line in open(net_file,"r")]
-
-
 	lin_indx = 0
 	for line in lines:
 		esin_lin = line.split(" ")
@@ -228,33 +224,23 @@ net_file: <String> - Filename of the network.
 			P = np.zeros((N,1))
 			P_disturbed = np.zeros(N)
 			alf = np.zeros(N)
-
 		elif ((lin_indx > 1) and (lin_indx < interacts + 2)):
 			ni = int(esin_lin[0])
 			nj = int(esin_lin[1])
 			K[ni][nj] = float(esin_lin[2])
-
 		elif ((lin_indx > interacts + 2) and (lin_indx < interacts + N + 3)):
 			ni = int(esin_lin[0])
 			P[ni] = float(esin_lin[1])
 			# P_disturbed[ni] = float(esin_lin[2])
-
-
 		lin_indx = lin_indx + 1
-
-
 	IM_Grapho = nx.from_numpy_matrix(K)
-
 	fr = plt.figure(figsize=(8,8))
 	ax1 = fr.add_subplot(111)
 	big_gen_list = list()
 	small_gen_list = list()
 	consumer_list = list()
-
 	P = np.array(P)
-
 	big_power = np.max(P[:])
-
 	for a_node in range(len(P)):
 		if (P[a_node] < 0.0):
 			consumer_list.append(a_node)
@@ -262,7 +248,6 @@ net_file: <String> - Filename of the network.
 			big_gen_list.append(a_node)
 		else:
 			small_gen_list.append(a_node)
-
 	pos=nx.spring_layout(IM_Grapho)
 	nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=big_gen_list, node_color='crimson', node_size=100, alpha=0.9, label = "Big Generators")
 	nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=small_gen_list, node_color='yellowgreen', node_size=70, alpha=0.9, label = "Small Generators")
@@ -279,3 +264,95 @@ net_file: <String> - Filename of the network.
 
 
 #################################################################################################################
+
+
+
+def build_circle_gif():
+'''
+Takes every image inside To_Gif folder and makes a gif.
+
+'''
+	images_f = glob("To_Gif/*.png")
+	c1 = 0
+	for an_img in images_f:
+		an_img = an_img.split(".")[0]
+		an_img = float(an_img.split("/")[1])
+		if an_img > c1:
+			c1 = an_img
+	print(c1)
+	for ijk in range(int(c1)):
+		if ijk < 10:
+			os.system("mv To_Gif/{}.png To_Gif/000{}.png".format(ijk, ijk))
+		elif ijk < 100:
+			os.system("mv To_Gif/{}.png To_Gif/00{}.png".format(ijk, ijk))
+		elif ijk < 1000:
+			os.system("mv To_Gif/{}.png To_Gif/0{}.png".format(ijk, ijk))
+	filenames = sorted(glob("To_Gif/*.png"))
+	images = []
+	for filename in filenames: 
+		images.append(imageio.imread(filename))
+	kargs = { 'duration': 0.15}
+	imageio.mimsave(out_name, images, **kargs)
+	
+	
+
+####################################################################################################
+
+
+
+def get_result(result_file, stead_time, tim_step):
+	my_data = [line.rstrip('\n') for line in open(result_file, "r")]
+	x_data = np.loadtxt(my_data)
+	x = x_data[:,1:-2]
+	N = int((x.shape[1])/2)
+	t = x_data[:,0]
+	Re_r = x_data[:,-2]
+	Im_r = x_data[:,-1]
+	Mag_r = np.sqrt(np.square(Re_r) + np.square(Im_r))
+	phases = ( x[:,0:N] + np.pi) % (2 * np.pi ) - np.pi
+	phase_velocity = x[:,N:-1]
+	stead_point = int(stead_time/tim_step)
+	phase_velocity_sq = np.square(phase_velocity[stead_point:,:])
+	v_inf = np.mean(np.mean(phase_velocity_sq, axis = 1), axis = 0)
+	r_inf = np.mean(Mag_r[stead_point:])
+	r_real_inf = np.mean(Re_r[stead_point:])
+	r_imag_inf = np.mean(Im_r[stead_point:])
+	return r_inf, r_real_inf, r_imag_inf, v_inf;
+
+####################################################
+
+def get_mean_results(std_time, t_step, steps, folders):
+'''
+INPUT:
+std_time: <Double> - Time at which steady state time is taken.
+t_step: time used as the integration step time.
+steps: steps taken before printing when the simulation was run.
+folders: <List> - Folders that contain files to average. Each folder generates one mean file.
+'''
+	t_step = t_step*steps
+	for folder in folders:
+		sets_files = sorted( glob( "{}/out_*.txt".format(folder) ) )
+		mean_out = "{}/mean_results_{}_.txt".format(folder, folder)
+		whole_results = open(mean_out, "w")
+
+		for a_set_file in sets_files:
+			one_set_name = a_set_file.replace("Results/out_", "")
+			one_set_name = one_set_name.replace("_k_1.000000_.txt", "")
+			print(one_set_name)
+			r_all_inf = list()
+			real_all_inf = list()
+			imag_all_inf = list()
+			k_all_inf = list()
+			v_all_inf = list()
+
+			r_inf_j, real_j, imag_j, v_inf_j = get_result(a_set_file, std_time, t_step)
+			r_all_inf.append(r_inf_j)
+			real_all_inf.append(real_j)
+			imag_all_inf.append(imag_j)
+			v_all_inf.append(v_inf_j)
+			k_j = one_set_name.split("_kinit_")[1]
+			k_j = float(k_j.split("_")[0])
+			k_all_inf.append(k_j)
+			whole_results.write("{} {} {} {} {} \n".format(k_j, r_inf_j, real_j, imag_j, v_inf_j))
+
+		whole_results.close()
