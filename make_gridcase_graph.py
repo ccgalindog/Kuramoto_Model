@@ -342,6 +342,8 @@ re_d: <Double> - Number which multiplies the real part of the case branches.
 im_d: <Double> - Number which multiplies the imaginary part of the case branches.
 start_speed: <String> - Initial condition for the angular velocity. Enter either "zeros" or "random".
 to_plot: <Boolean> - If want to plot the output graph.
+OUTPUT:
+A text file at Networks folder and a text file at Initial_States folder.
 '''
 
 	if (case == "case9"):
