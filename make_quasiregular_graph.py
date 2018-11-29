@@ -26,24 +26,24 @@ A text file at Networks folder.
 	assert (((int(np.sqrt(consumers)))**2) == consumers ), "Consumers value must be a perfect square number!!"
 
 
-	powers = powers.replace("[", "")
-	powers = powers.replace("]", "")
-	powers = powers.replace(",", "")
-	powers = powers.split("_")
-	powers = [float(a_power) for a_power in powers]
+#	powers = powers.replace("[", "")
+#	powers = powers.replace("]", "")
+#	powers = powers.replace(",", "")
+#	powers = powers.split("_")
+#	powers = [float(a_power) for a_power in powers]
 
-	powers_disturb = powers_disturb.replace("[", "")
-	powers_disturb = powers_disturb.replace("]", "")
-	powers_disturb = powers_disturb.replace(",", "")
-	powers_disturb = powers_disturb.split("_")
-	powers_disturb = [float(a_power) for a_power in powers_disturb]
+#	powers_disturb = powers_disturb.replace("[", "")
+#	powers_disturb = powers_disturb.replace("]", "")
+#	powers_disturb = powers_disturb.replace(",", "")
+#	powers_disturb = powers_disturb.split("_")
+#	powers_disturb = [float(a_power) for a_power in powers_disturb]
 
 
-	alfas = alfas.replace("[", "")
-	alfas = alfas.replace("]", "")
-	alfas = alfas.replace(",", "")
-	alfas = alfas.split("_")
-	alfas = [float(an_alfa) for an_alfa in alfas]
+#	alfas = alfas.replace("[", "")
+#	alfas = alfas.replace("]", "")
+#	alfas = alfas.replace(",", "")
+#	alfas = alfas.split("_")
+#	alfas = [float(an_alfa) for an_alfa in alfas]
 
 
 	N = nodes
