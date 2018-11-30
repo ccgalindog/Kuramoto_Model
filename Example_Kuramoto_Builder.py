@@ -5,6 +5,7 @@ import start_kuramoto_system
 
 def main():
 	# Parameters:
+	boost_dir = "/home/cristian/boost_1_68_0"
 	for num_simulation in range(1):
 
 		type_net = "case9" # Pick either "sw" : Smallworld; "rd" : Random; "qr" : QuasiRegular; "2n" : Two-nodes
@@ -64,7 +65,7 @@ def main():
 
 		print(" Nodes:",  N, "\n", "Sum of vector P:", np.sum(P))
 		start_kuramoto_system.create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, net_name, N, neighbors, pth, mean_degree, consumers, give_initstate_list, init_ang, init_vel, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, delt_d, num_init_files)
-
+	start_kuramoto_system.get_to_run_file(boost_dir)
 		
 if __name__ == '__main__':
 	main()
