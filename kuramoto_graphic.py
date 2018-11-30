@@ -9,7 +9,8 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.ticker as plticker
 from glob import glob
 import click
-
+import os
+import imageio
 # In this file you find the functions:
 # plot_time_evolution
 # plot_phaseplane_2node
@@ -20,13 +21,13 @@ import click
 
 
 def plot_time_evolution(result_file, stead_points, wrap_pi):
-'''
-Get graphics of the time evolution of one system.
-INPUT:
-result_file: <String> - File name of the text file containing the results of a simulation.
-stead_points: <Int> - How many points to plot from the steady-state dynamics.
-wrap_pi: <Boolean> - You want the phase evolution beeing plotted in the range [-Pi, Pi] or not.
-'''
+	'''
+	Get graphics of the time evolution of one system.
+	INPUT:
+	result_file: <String> - File name of the text file containing the results of a simulation.
+	stead_points: <Int> - How many points to plot from the steady-state dynamics.
+	wrap_pi: <Boolean> - You want the phase evolution beeing plotted in the range [-Pi, Pi] or not.
+	'''
 	outfile = result_file.split("/")[1]
 	outfile = outfile.replace(".txt", "")
 	result_file = open(result_file)
@@ -97,11 +98,11 @@ wrap_pi: <Boolean> - You want the phase evolution beeing plotted in the range [-
 
 
 def plot_phaseplane_2node(result_folder):
-'''
-Plot the phase plane for a 2-node network.
-INPUT:
-result_folder: <String> - Folder where all the result files are located.
-'''
+	'''
+	Plot the phase plane for a 2-node network.
+	INPUT:
+	result_folder: <String> - Folder where all the result files are located.
+	'''
 	all_out_files = glob("{}/out*".format(result_folder))
 	fig = plt.figure()
 	ax = fig.add_subplot(111)
@@ -142,20 +143,20 @@ result_folder: <String> - Folder where all the result files are located.
 
 
 def plot_oscillator_circle(result_file, nodes_to_plot, jumps, stop_time, t_disturb, t_recover, ki, colors_to_plot):
-'''
-Plot time evolution as points rotating in a unit circle.
-INPUT:
-result_file: <String> - Filename.
-nodes_to_plot: <List> - Nodes you want to watch.
-jumps: <Int> - Jumps taken in time to choose points to plot.
-stop_time: <Double> - When to stop plotting.
-t_disturb: <Double> - Time at which a disturbance occurred (if none, use t_disturb > stop_time).
-t_recover: <Double> - Time at which a disturbance finished (if none, use t_recover > stop_time).
-ki: <Double> - Coupling stregth used in the simulation.
-colors_to_plot: <List> - Color given to each node.
-OUTPUT:
-Some PNG images in the folder To_Gif, each one showing the state of the system at some point in time.
-'''
+	'''
+	Plot time evolution as points rotating in a unit circle.
+	INPUT:
+	result_file: <String> - Filename.
+	nodes_to_plot: <List> - Nodes you want to watch.
+	jumps: <Int> - Jumps taken in time to choose points to plot.
+	stop_time: <Double> - When to stop plotting.
+	t_disturb: <Double> - Time at which a disturbance occurred (if none, use t_disturb > stop_time).
+	t_recover: <Double> - Time at which a disturbance finished (if none, use t_recover > stop_time).
+	ki: <Double> - Coupling stregth used in the simulation.
+	colors_to_plot: <List> - Color given to each node.
+	OUTPUT:
+	Some PNG images in the folder To_Gif, each one showing the state of the system at some point in time.
+	'''
 	x_data = np.loadtxt(result_file)
 	x = x_data[:,1:-2]
 	N = int((x.shape[1])/2)
@@ -203,11 +204,11 @@ Some PNG images in the folder To_Gif, each one showing the state of the system a
 
 
 def plot_a_graph(net_name, net_file):
-'''
-net_name: <String> - Name of the network.
-net_file: <String> - Filename of the network.
+	'''
+	net_name: <String> - Name of the network.
+	net_file: <String> - Filename of the network.
 
-'''
+	'''
 	created_file = "Networks/{}_.txt".format(net_name)
 	os.system("cp {} {}".format(net_file, created_file))
 	net_name = net_file.replace("Example_Cases/", "")
@@ -267,11 +268,47 @@ net_file: <String> - Filename of the network.
 
 
 
-def build_circle_gif():
-'''
-Takes every image inside To_Gif folder and makes a gif.
+def build_circle_gif(result_file, out_name, stop_time, t_disturb, t_recover, jumps, nodes_to_plot, ki):
+	'''
+	Takes every image inside To_Gif folder and makes a gif.
+	INPUT:
+	result_file: <String> - Name of file with results to plot.
+	out_name: <String> - Name of the output Gif.
+	stop_time: <Double> - Stop plotting at.
+	t_disturb: <Double> - Time at which a disturbance occurred. If none use t_disturb > stop_time.
+	t_recover: <Double> - Time at which the system recovers from a disturbance. If none use t_recover > stop_time.
+	jumps: <Int> - How many integration steps to jump before building a shot of the system state.
+	nodes_to_plot: <List> - Each element is a node that wants to be plotted.
+	ki: <Double> - Value identifier for this simulation.
+	'''
+	net_file = result_file.replace("Results/out_", "")
+	da_k = net_file.split("k_")[1]
+	da_k = float(da_k.split("_")[0])
+	net_file = net_file.split("k_")[0]
+	net_file = "Networks/" + net_file + ".txt"
 
-'''
+	lines = [line.rstrip('\n') for line in open(net_file, "r")]
+
+	interactions = int(lines[0].split(" ")[1])
+
+	colors_to_plot = list()
+	gimme_da_power = list()
+	for node in nodes_to_plot:
+		power_line = lines[interactions + 3 + node]
+		gimme_da_power.append(float(power_line.split(" ")[1]))
+
+	gimme_da_power = np.array(gimme_da_power)
+	max_power = np.amax(gimme_da_power)
+
+	for an_indx in range(len(nodes_to_plot)):
+		if (gimme_da_power[an_indx] < 0):
+			colors_to_plot.append("indigo")
+		elif (gimme_da_power[an_indx] == max_power):
+			colors_to_plot.append("crimson")
+		else:
+			colors_to_plot.append("yellowgreen")
+
+	plot_oscillator_circle(result_file, nodes_to_plot, jumps, stop_time, t_disturb, t_recover, ki, colors_to_plot)
 	images_f = glob("To_Gif/*.png")
 	c1 = 0
 	for an_img in images_f:

@@ -13,7 +13,7 @@ from pypower.idx_gen import PG, QG, GEN_BUS
 from pypower.idx_bus import PD, QD, VM, VA, BUS_I
 from scipy.sparse import csr_matrix
 from scipy.optimize import minimize
-import example_grid_cases as gridcase
+import grid_cases as gridcase
 
 # In this file you find the following functions:
 # build_2node_graph
@@ -30,17 +30,17 @@ import example_grid_cases as gridcase
 
 
 def build_2node_graph(net_name, powers, powers_disturb, alfas, to_plot):
-'''
-Create a Wattss-Strogatz graph where nodes are located initially in a ring connected to some amount neighbors and then connections are relinked with some probability pth.
-INPUT:
-net_name: <String> - Name of the network. 
-powers: <List> (2 elements) - Default power at each node.
-powers_disturb: <List> (2 elements) - Power at each node after a disturbance.
-alfas: <List> (2 elements) - Damping at each node.
-to_plot: <Boolean> - If want to plot the output graph.
-OUTPUT:
-A text file at Networks folder.
-'''
+	'''
+	Create a Wattss-Strogatz graph where nodes are located initially in a ring connected to some amount neighbors and then connections are relinked with some probability pth.
+	INPUT:
+	net_name: <String> - Name of the network. 
+	powers: <List> (2 elements) - Default power at each node.
+	powers_disturb: <List> (2 elements) - Power at each node after a disturbance.
+	alfas: <List> (2 elements) - Damping at each node.
+	to_plot: <Boolean> - If want to plot the output graph.
+	OUTPUT:
+	A text file at Networks folder.
+	'''
 	N = 2
 	K = np.array([[0, 1], [1, 0]])
 	IM_Grapho = nx.from_numpy_matrix(K)
@@ -104,20 +104,20 @@ A text file at Networks folder.
 
 
 def build_quasiregular_graph(nodes, consumers, net_name, powers, powers_disturb, alfas, delt_d, to_plot):
-'''
-Create a graph where consumers are located in a square lattice and generators are located randomly and connected to 4 nearest neighbours.
-INPUT:
-nodes: <Int> - Total amount of nodes.
-consumers: <Int> - Amount of consumers. Must be a perfect square number and must be lower than 'nodes'. 
-net_name: <String> - Name of the network. 
-powers: <List> - Default power at each node.
-powers_disturb: <List> - Power at each node after a disturbance.
-alfas: <List> - Damping at each node.
-delt_d: <Double> - Fraction of generator nodes that are assigned as 'small generators'.
-to_plot: <Boolean> - If want to plot the output graph.
-OUTPUT:
-A text file at Networks folder.
-'''
+	'''
+	Create a graph where consumers are located in a square lattice and generators are located randomly and connected to 4 nearest neighbours.
+	INPUT:
+	nodes: <Int> - Total amount of nodes.
+	consumers: <Int> - Amount of consumers. Must be a perfect square number and must be lower than 'nodes'. 
+	net_name: <String> - Name of the network. 
+	powers: <List> - Default power at each node.
+	powers_disturb: <List> - Power at each node after a disturbance.
+	alfas: <List> - Damping at each node.
+	delt_d: <Double> - Fraction of generator nodes that are assigned as 'small generators'.
+	to_plot: <Boolean> - If want to plot the output graph.
+	OUTPUT:
+	A text file at Networks folder.
+	'''
 	assert (((int(np.sqrt(consumers)))**2) == consumers ), "Consumers value must be a perfect square number!!"
 	N = nodes
 	consr_lim = int(np.sqrt(consumers))
@@ -233,20 +233,20 @@ A text file at Networks folder.
 
 
 def build_random_graph(nodes, m_degree, net_name, powers, powers_disturb, alfas, delt_d, to_plot):
-'''
-Create a graph where consumers and generators are located randomly and connected with a mean node degree.
-INPUT:
-nodes: <Int> - Total amount of nodes.
-m_degree: <Int> - Mean node degree desired. 
-net_name: <String> - Name of the network. 
-powers: <List> - Default power at each node.
-powers_disturb: <List> - Power at each node after a disturbance.
-alfas: <List> - Damping at each node.
-delt_d: <Double> - Fraction of generator nodes that are assigned as 'small generators'.
-to_plot: <Boolean> - If want to plot the output graph.
-OUTPUT:
-A text file at Networks folder.
-'''
+	'''
+	Create a graph where consumers and generators are located randomly and connected with a mean node degree.
+	INPUT:
+	nodes: <Int> - Total amount of nodes.
+	m_degree: <Int> - Mean node degree desired. 
+	net_name: <String> - Name of the network. 
+	powers: <List> - Default power at each node.
+	powers_disturb: <List> - Power at each node after a disturbance.
+	alfas: <List> - Damping at each node.
+	delt_d: <Double> - Fraction of generator nodes that are assigned as 'small generators'.
+	to_plot: <Boolean> - If want to plot the output graph.
+	OUTPUT:
+	A text file at Networks folder.
+	'''
 	N = nodes
 	connected = False
 	m_degree = m_degree/2
@@ -332,21 +332,21 @@ A text file at Networks folder.
 
 
 def build_smallworld_graph(nodes, neighbors, pth, net_name, powers, powers_disturb, alfas, delt_d, to_plot):
-'''
-Create a Wattss-Strogatz graph where nodes are located initially in a ring connected to some amount neighbors and then connections are relinked with some probability pth.
-INPUT:
-nodes: <Int> - Total amount of nodes.
-neighbors: <Int> - Amount of initial neighbors for each node in the ring. 
-pth: <Double> - Rewiring probability.
-net_name: <String> - Name of the network. 
-powers: <List> - Default power at each node.
-powers_disturb: <List> - Power at each node after a disturbance.
-alfas: <List> - Damping at each node.
-delt_d: <Double> - Fraction of generator nodes that are assigned as 'small generators'.
-to_plot: <Boolean> - If want to plot the output graph.
-OUTPUT:
-A text file at Networks folder.
-'''
+	'''
+	Create a Wattss-Strogatz graph where nodes are located initially in a ring connected to some amount neighbors and then connections are relinked with some probability pth.
+	INPUT:
+	nodes: <Int> - Total amount of nodes.
+	neighbors: <Int> - Amount of initial neighbors for each node in the ring. 
+	pth: <Double> - Rewiring probability.
+	net_name: <String> - Name of the network. 
+	powers: <List> - Default power at each node.
+	powers_disturb: <List> - Power at each node after a disturbance.
+	alfas: <List> - Damping at each node.
+	delt_d: <Double> - Fraction of generator nodes that are assigned as 'small generators'.
+	to_plot: <Boolean> - If want to plot the output graph.
+	OUTPUT:
+	A text file at Networks folder.
+	'''
 	N = nodes
 	IM_Grapho = nx.connected_watts_strogatz_graph(nodes, neighbors, pth)
 	K = nx.adjacency_matrix(IM_Grapho)
@@ -354,7 +354,7 @@ A text file at Networks folder.
 	alf = list()
 	P = list()
 	link_list = list()
-
+	
 	for node_i in range(N):
 		alf.append([node_i, alfas[node_i]])
 		if powers[node_i] > 0:
@@ -642,23 +642,23 @@ def get_kuramoto_net(A, K_hat, Gamm, est_dyn, model, ref_freq, gtb):
 
 
 def build_gridcase_graph(case, model, ref_freq, k_alt_ini, k_alt_fin, k_alt_step, mag_d, re_d, im_d, start_speed, to_plot):
-'''
-This function creates a graph from a real power grid given by a pypsa case 
-INPUT:
-case: <String> - Grid case name. Example: "case9".
-model: <String> - either "sm", "sp" or "en".
-ref_freq: <Double> - Reference frequency.
-k_alt_ini: <Double> - Initial disturbance for the Y_bus. 
-k_alt_fin: <Double> - Final disturbance for the Y_bus.
-k_alt_step: <Double> - Step taken for each disturbance on Y_bus.
-mag_d: <Double> - Number which multiplies the magnitude of the case branches.
-re_d: <Double> - Number which multiplies the real part of the case branches.
-im_d: <Double> - Number which multiplies the imaginary part of the case branches.
-start_speed: <String> - Initial condition for the angular velocity. Enter either "zeros" or "random".
-to_plot: <Boolean> - If want to plot the output graph.
-OUTPUT:
-A text file at Networks folder and a text file at Initial_States folder.
-'''
+	'''
+	This function creates a graph from a real power grid given by a pypsa case 
+	INPUT:
+	case: <String> - Grid case name. Example: "case9".
+	model: <String> - either "sm", "sp" or "en".
+	ref_freq: <Double> - Reference frequency.
+	k_alt_ini: <Double> - Initial disturbance for the Y_bus. 
+	k_alt_fin: <Double> - Final disturbance for the Y_bus.
+	k_alt_step: <Double> - Step taken for each disturbance on Y_bus.
+	mag_d: <Double> - Number which multiplies the magnitude of the case branches.
+	re_d: <Double> - Number which multiplies the real part of the case branches.
+	im_d: <Double> - Number which multiplies the imaginary part of the case branches.
+	start_speed: <String> - Initial condition for the angular velocity. Enter either "zeros" or "random".
+	to_plot: <Boolean> - If want to plot the output graph.
+	OUTPUT:
+	A text file at Networks folder and a text file at Initial_States folder.
+	'''
 	if (case == "case9"):
 		mpc, est_dyn = gridcase.case9(mag_d, re_d, im_d)
 	mpc2 = runpf(mpc)	

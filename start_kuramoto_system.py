@@ -2,7 +2,7 @@ import numpy as np
 import os
 from sklearn.utils import shuffle
 import make_kuramoto_graph as mk_graph
-
+from glob import glob
 # In this file the following functions are located:
 # get_to_run_file
 # create_system
@@ -12,12 +12,12 @@ import make_kuramoto_graph as mk_graph
 # create_simulation_files
 
 def get_to_run_file(boost_dir):
-'''
-INPUT:
-boost_dir: <String> - Location of Boost directory.
-OUTPUT:
-to_run.sh file which lists all the simulations that need to be run.
-'''
+	'''
+	INPUT:
+	boost_dir: <String> - Location of Boost directory.
+	OUTPUT:
+	to_run.sh file which lists all the simulations that need to be run.
+	'''
 	all_sets_files = glob("Sim_Settings/*.txt")
 	flags_compiler = "c++ -O3 -Wall -ffast-math -std=c++11"
 	functions_name = "kuramoto_functions.cpp"
@@ -44,24 +44,24 @@ to_run.sh file which lists all the simulations that need to be run.
 
 
 def create_system(net_file, initstate_file, sets_file, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, model):
-'''
-INPUT:
-net_file: <String> - Filename of the Network file.
-initstate_file: <String> - Filename of the Initial State file.
-sets_file: <String> - Output filename for the Settings file.
-tini: <Double> - Initial simulation time.
-tfin: <Double> - Final simulation time.
-steps_to_print: <Int> - Steps to simulate before printing output data. 
-mx_step: <Double> - Integration step.
-kini: <Double> - Initial coupling strength.
-kfin: <Double> - Final coupling strength.
-kstep: <Double> - Steps for the coupling strength sweep.
-t_disturb: <Double> - Time at which a disturbance occurs in the power demand.
-t_recover: <Double> - Time at which the system recovers from the disturbance.
-model: <String> - Either "sm", "sp" or "en".
-OUTPUT:
-Settings file with the information of the simulation that will be run.
-'''
+	'''
+	INPUT:
+	net_file: <String> - Filename of the Network file.
+	initstate_file: <String> - Filename of the Initial State file.
+	sets_file: <String> - Output filename for the Settings file.
+	tini: <Double> - Initial simulation time.
+	tfin: <Double> - Final simulation time.
+	steps_to_print: <Int> - Steps to simulate before printing output data. 
+	mx_step: <Double> - Integration step.
+	kini: <Double> - Initial coupling strength.
+	kfin: <Double> - Final coupling strength.
+	kstep: <Double> - Steps for the coupling strength sweep.
+	t_disturb: <Double> - Time at which a disturbance occurs in the power demand.
+	t_recover: <Double> - Time at which the system recovers from the disturbance.
+	model: <String> - Either "sm", "sp" or "en".
+	OUTPUT:
+	Settings file with the information of the simulation that will be run.
+	'''
 	settings_file = open(sets_file, "w")
 	settings_file.write("T_ini: {} \nT_fin: {} \nPrint_steps: {} \nT_max_step: {} \nT_disturb: {} \nT_recover: {} \n".format(tini, tfin, steps_to_print, mx_step, t_disturb, t_recover))
 	settings_file.write("K_ini: {} \nK_fin: {} \nK_step: {} \n".format(kini, kfin, kstep))
@@ -77,29 +77,29 @@ Settings file with the information of the simulation that will be run.
 
 	
 def default_constructor(type_net, dyn_model, delt_d, consumers, Pc, Psg, Pbg, damp):
-'''
-Default constructor for the parameters of a network.
-INPUT:
-type_net: <String> - Type of the network.
-dyn_model: <String> - Dynamical model. Either "sm", "sp" or "en"
-delt_d: <Double> - Proportion of distributed generation. Value in the range [0,1]
-consumers: <Int> - Amount of consumers.
-Pc: <Double> - Power drained by each consumer.
-Psg: <Double> - Power of small generators.
-Pbg: <Double> - Power of big generators.
-damp: <Double> - Damping, assummed equal for every node.
-OUTPUT:
-N: <Int> - Total number of nodes.
-P: <Numpy array> - Power of each node.
-alf: <Numpy array> - Damping of each node.
+	'''
+	Default constructor for the parameters of a network.
+	INPUT:
+	type_net: <String> - Type of the network.
+	dyn_model: <String> - Dynamical model. Either "sm", "sp" or "en"
+	delt_d: <Double> - Proportion of distributed generation. Value in the range [0,1]
+	consumers: <Int> - Amount of consumers.
+	Pc: <Double> - Power drained by each consumer.
+	Psg: <Double> - Power of small generators.
+	Pbg: <Double> - Power of big generators.
+	damp: <Double> - Damping, assummed equal for every node.
+	OUTPUT:
+	N: <Int> - Total number of nodes.
+	P: <Numpy array> - Power of each node.
+	alf: <Numpy array> - Damping of each node.
 
-'''
+	'''
 	if (type_net == "2n"):
 		N = 2
-		P = (np.zeros((1, N)))
-		P[0,0] = Pbg
-		P[0,1] = Pc
-		alf = (damp*np.ones((1, N)))
+		P = (np.zeros(N))
+		P[0] = Pbg
+		P[1] = Pc
+		alf = (damp*np.ones(N))
 	elif (type_net == "case9"): # Something by default, values won't matter
 		if (dyn_model == "sm"):
 			N = 9
@@ -107,29 +107,29 @@ alf: <Numpy array> - Damping of each node.
 			N = 3
 		elif (dyn_model == "sp"):
 			N = 12
-		P = (np.zeros((1, N)))
-		P[0,0] = Pbg
-		P[0,1] = Pc
-		alf = (damp*np.ones((1, N)))	
+		P = (np.zeros(N))
+		P[0] = Pbg
+		P[1] = Pc
+		alf = (damp*np.ones(N))	
 	else:
 		Nsg = int(round(-(delt_d*consumers*Pc)/Psg)) # Amount of small generators
 		Nbg = int(round(-(consumers*Pc + Nsg*Psg)/Pbg)) # Amount of big generators
 		N = consumers + Nbg + Nsg
-		P = (np.zeros((1, N)))
+		P = (np.zeros(N))
 		for k in range(N):
 			if (k < Nbg):
-				P[0,k] = Pbg
+				P[k] = Pbg
 			elif (k < Nbg + Nsg):
-				P[0,k] = Psg
+				P[k] = Psg
 			else:
-				P[0,k] = Pc
-		alf = (damp*np.ones((1, N)))
+				P[k] = Pc
+		alf = (damp*np.ones(N))
 		if (type_net == "sw"): # For SmallWorld network shuffle the nodes
-			am1 = P.shape[1]
+			am1 = len(P)
 			randomize = np.arange(am1)
 			np.random.shuffle(randomize)
-			P[0][:] = P[0][randomize]
-			alf[0][:] = alf[0][randomize]
+			P[:] = P[randomize]
+			alf[:] = alf[randomize]
 
 	return N, P, alf
 
@@ -140,19 +140,19 @@ alf: <Numpy array> - Damping of each node.
 
 
 def disturbe_all_consumers(P, N, force):
-'''
-Default disturbance creation. Take a power distribution and at some time adds an increased demand from every consumer.
-INPUT:
-P: <NUmpy array> - Power at each node.
-N: <Int> - Number of nodes.
-force: <Double> - Value that multiplies the power o every consumer in the disturbance.
-'''
-	P_disturbed = (np.zeros((1, N)))
-	for i in range(P.shape[1]):
-		if P[0, i] < 0:
-			P_disturbed[0, i] = force*P[0, i]
+	'''
+	Default disturbance creation. Take a power distribution and at some time adds an increased demand from every consumer.
+	INPUT:
+	P: <NUmpy array> - Power at each node.
+	N: <Int> - Number of nodes.
+	force: <Double> - Value that multiplies the power o every consumer in the disturbance.
+	'''
+	P_disturbed = (np.zeros(N))
+	for i in range(len(P)):
+		if P[i] < 0:
+			P_disturbed[i] = force*P[i]
 		else:
-			P_disturbed[0, i] = P[0, i]
+			P_disturbed[i] = P[i]
 	return P_disturbed
 
 
@@ -162,14 +162,14 @@ force: <Double> - Value that multiplies the power o every consumer in the distur
 
 
 def generate_initstate(nodes, init_ang, init_vel, initstate_file):
-'''
-Creates an initial state file for the simulation with either zeros or random conditions.
-INPUT:
-nodes: <Int> - Amount of nodes.
-init_ang: <String> - Initial phases, either "zeros" or "random".
-init_vel: <String> - Initial phase velocities, either "zeros" or "random".
-initstate_file: <String> - Name for the initial state file to be created.
-'''
+	'''
+	Creates an initial state file for the simulation with either zeros or random conditions.
+	INPUT:
+	nodes: <Int> - Amount of nodes.
+	init_ang: <String> - Initial phases, either "zeros" or "random".
+	init_vel: <String> - Initial phase velocities, either "zeros" or "random".
+	initstate_file: <String> - Name for the initial state file to be created.
+	'''
 	if (init_ang == "random"):
 		theta_0 = 2*np.pi*np.random.rand(nodes)
 	if (init_ang == "zeros"):
@@ -191,50 +191,50 @@ initstate_file: <String> - Name for the initial state file to be created.
 
 
 def create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, net_name, N, neighbors, pth, mean_degree, consumers, give_initstate_list, init_ang, init_vel, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, delt_d, num_init_files,  mag_d, re_d, im_d, to_plot_net):
-'''
-Creates the files needed for the simulation.
-INPUT:
-P: <NUmpy array> - Power at each node.
-P_disturbed: <Numpy array> - Power at each node after disturbance.
-alf: <Numpy array> - Damping at each node.
-type_net: <String> - Network type. Either "2n": Two-node, "qr": Quasiregular, "sw": Small-World, "rd": Random or "case{}", where {} can be any of the implemented grid cases
-dyn_model: <String> - Either "sm": Synchronous Motor, "en": Effective Network, "sp": Structure Preserving.
-ref_freq: <Double> - Reference frequency of the grid.
-net_name: <String> - Name of the network.
-N: <Int> - Amount of nodes.
-neighbors: <Int> - Neighbours for Small-World network only.
-pth: <Double> - Rewiring probability for Small-World network only. Number in the range [0, 1]
-mean_degree: <Double> - Desired mean connection degree for Random network only.
-consumers: <Int> - Amount of consumers in the Quasiregular network only.
-give_initstate_list: <List> - If the first element of the list is the string "no", this program will create an initial state file.
-				Otherwise, each position of the list must be a string that gives the path and name of the initial state file you want to use.
-init_ang: <String> - Initial condition for all phases if you will create the initial state file. Either "random" or "zeros".
-init_vel: <String> - Initial condition for all phase velocities if you will create the initial state file. Either "random" or "zeros".
-tini: <Double> - Initial time for the simulation.
-tfin: <Double> - Final time for the simulation.
-steps_to_print: <Int> - How many integration steps to simulate before printing data in the output file.
-mx_step: <Double> - Integration step.
+	'''
+	Creates the files needed for the simulation.
+	INPUT:
+	P: <NUmpy array> - Power at each node.
+	P_disturbed: <Numpy array> - Power at each node after disturbance.
+	alf: <Numpy array> - Damping at each node.
+	type_net: <String> - Network type. Either "2n": Two-node, "qr": Quasiregular, "sw": Small-World, "rd": Random or "case{}", where {} can be any of the implemented grid cases
+	dyn_model: <String> - Either "sm": Synchronous Motor, "en": Effective Network, "sp": Structure Preserving.
+	ref_freq: <Double> - Reference frequency of the grid.
+	net_name: <String> - Name of the network.
+	N: <Int> - Amount of nodes.
+	neighbors: <Int> - Neighbours for Small-World network only.
+	pth: <Double> - Rewiring probability for Small-World network only. Number in the range [0, 1]
+	mean_degree: <Double> - Desired mean connection degree for Random network only.
+	consumers: <Int> - Amount of consumers in the Quasiregular network only.
+	give_initstate_list: <List> - If the first element of the list is the string "no", this program will create an initial state file.
+					Otherwise, each position of the list must be a string that gives the path and name of the initial state file you want to use.
+	init_ang: <String> - Initial condition for all phases if you will create the initial state file. Either "random" or "zeros".
+	init_vel: <String> - Initial condition for all phase velocities if you will create the initial state file. Either "random" or "zeros".
+	tini: <Double> - Initial time for the simulation.
+	tfin: <Double> - Final time for the simulation.
+	steps_to_print: <Int> - How many integration steps to simulate before printing data in the output file.
+	mx_step: <Double> - Integration step.
 
-To sweep over a range of coupling strength values:
+	To sweep over a range of coupling strength values:
 
-kini: <Double> - Initial coupling stregth.
-kfin: <Double> - Final coupling stregth.
-kstep: <Double> - Step for the coupling stregth sweep.
-t_disturb: <Double> - Time at which a disturbance occurs. If none then choose t_disturb > tfin.
-t_recover: <Double> - Time at which the system recovers from a disturbance. If none then choose t_recover > tfin.
-delt_d: <Double> - Proportion of small generators.
-num_init_files: <Int> - How many different initial conditions want to try (if "random" initial conditions where chosen).
-mag_d: <Double> - Factor used to amplify the magnitude of the Y_bus matrix of a grid case if that kind of network was chosen.
-re_d: <Double> - Factor used to amplify the real part of the Y_bus matrix of a grid case if that kind of network was chosen.
-im_d: <Double> - Factor used to amplify the imaginary part of the Y_bus matrix of a grid case if that kind of network was chosen.
-to_plot_net: <Boolean> - To create an image of the generated network or not.
+	kini: <Double> - Initial coupling stregth.
+	kfin: <Double> - Final coupling stregth.
+	kstep: <Double> - Step for the coupling stregth sweep.
+	t_disturb: <Double> - Time at which a disturbance occurs. If none then choose t_disturb > tfin.
+	t_recover: <Double> - Time at which the system recovers from a disturbance. If none then choose t_recover > tfin.
+	delt_d: <Double> - Proportion of small generators.
+	num_init_files: <Int> - How many different initial conditions want to try (if "random" initial conditions where chosen).
+	mag_d: <Double> - Factor used to amplify the magnitude of the Y_bus matrix of a grid case if that kind of network was chosen.
+	re_d: <Double> - Factor used to amplify the real part of the Y_bus matrix of a grid case if that kind of network was chosen.
+	im_d: <Double> - Factor used to amplify the imaginary part of the Y_bus matrix of a grid case if that kind of network was chosen.
+	to_plot_net: <Boolean> - To create an image of the generated network or not.
 
-OUTPUT:
-For each network built, this program generates 3 text files:
-- A file in the folder Networks/ which contains the parameters of the network you want to simulate.
-- A file in the folder Initial_States/ which contains the information about the initial conditions for phase and phase velocity of every node.
-- A file in the folder Sim_Settings/ which contains the simulation settings.
-'''
+	OUTPUT:
+	For each network built, this program generates 3 text files:
+	- A file in the folder Networks/ which contains the parameters of the network you want to simulate.
+	- A file in the folder Initial_States/ which contains the information about the initial conditions for phase and phase velocity of every node.
+	- A file in the folder Sim_Settings/ which contains the simulation settings.
+	'''
 	network_file = "Networks/" + net_name + "_.txt"
 
 	if (type_net == "sw"):

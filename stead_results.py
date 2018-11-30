@@ -31,20 +31,21 @@ def get_result(result_file, stead_time, tim_step):
 
 ####################################################
 
-def get_mean_results(std_time, t_step, steps, folders, key_index):
-'''
-INPUT:
-std_time: <Double> - Time at which steady state time is taken.
-t_step: <Double> - time used as the integration step time.
-steps: <Int> - steps taken before printing when the simulation was run.
-folders: <List> - Folders that contain files to average. Each folder generates one mean file.
-key_index: <Int> - Position in the name of the result files after splitting with "_", such that it
-		   contains the element to take as identifier for averaging.
-'''
+def get_mean_results(std_time, t_step, steps, folders, mean_names, key_index):
+	'''
+	INPUT:
+	std_time: <Double> - Time at which steady state time is taken.
+	t_step: <Double> - time used as the integration step time.
+	steps: <Int> - steps taken before printing when the simulation was run.
+	folders: <List> - Folders that contain files to average. Each folder generates one mean file.
+	mean_names: <List> - Same size as folders. Each element is the name to give to the mean file.
+	key_index: <Int> - Position in the name of the result files after splitting with "_", such that it
+			   contains the element to take as identifier for averaging.
+	'''
 	t_step = t_step*steps
-	for folder in folders:
+	for folder, mean_name in zip(folders, mean_names):
 		sets_files = sorted( glob( "{}/out_*.txt".format(folder) ) )
-		mean_out = "{}/mean_results_{}_.txt".format(folder, folder)
+		mean_out = "{}/mean_results_{}_.txt".format(folder, mean_name)
 		whole_results = open(mean_out, "w")
 		for a_set_file in sets_files:
 			r_all_inf = list()
