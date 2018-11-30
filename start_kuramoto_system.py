@@ -29,7 +29,44 @@ to_run.sh file which lists all the simulations that need to be run.
 		sims_2_run.write(a_sim + "\n")
 	sims_2_run.close()
 
+	
+	
 ######################################################################################################
+
+
+
+def create_system(net_file, initstate_file, sets_file, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, model):
+'''
+INPUT:
+net_file: <String> - Filename of the Network file.
+initstate_file: <String> - Filename of the Initial State file.
+sets_file: <String> - Output filename for the Settings file.
+tini: <Double> - Initial simulation time.
+tfin: <Double> - Final simulation time.
+steps_to_print: <Int> - Steps to simulate before printing output data. 
+mx_step: <Double> - Integration step.
+kini: <Double> - Initial coupling strength.
+kfin: <Double> - Final coupling strength.
+kstep: <Double> - Steps for the coupling strength sweep.
+t_disturb: <Double> - Time at which a disturbance occurs in the power demand.
+t_recover: <Double> - Time at which the system recovers from the disturbance.
+model: <String> - Either "sm", "sp" or "en".
+OUTPUT:
+Settings file with the information of the simulation that will be run.
+'''
+	settings_file = open(sets_file, "w")
+	settings_file.write("T_ini: {} \nT_fin: {} \nPrint_steps: {} \nT_max_step: {} \nT_disturb: {} \nT_recover: {} \n".format(tini, tfin, steps_to_print, mx_step, t_disturb, t_recover))
+	settings_file.write("K_ini: {} \nK_fin: {} \nK_step: {} \n".format(kini, kfin, kstep))
+	settings_file.write("Network_file: {} \n".format(net_file))
+	settings_file.write("Initial_state_file: {} \n".format(initstate_file))
+	settings_file.write("Model: {} \n".format(model))
+	settings_file.close()
+
+	
+	
+#######################################################################################################
+
+
 	
 def default_constructor(type_net, dyn_model, delt_d, consumers, Pc, Psg, Pbg, damp):
 
