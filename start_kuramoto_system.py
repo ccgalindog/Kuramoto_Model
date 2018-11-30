@@ -183,7 +183,50 @@ initstate_file: <String> - Name for the initial state file to be created.
 
 
 def create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, net_name, N, neighbors, pth, mean_degree, consumers, give_initstate_list, init_ang, init_vel, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, delt_d, num_init_files,  mag_d, re_d, im_d, to_plot_net):
-	
+'''
+Creates the files needed for the simulation.
+INPUT:
+P: <NUmpy array> - Power at each node.
+P_disturbed: <Numpy array> - Power at each node after disturbance.
+alf: <Numpy array> - Damping at each node.
+type_net: <String> - Network type. Either "2n": Two-node, "qr": Quasiregular, "sw": Small-World, "rd": Random or "case{}", where {} can be any of the implemented grid cases
+dyn_model: <String> - Either "sm": Synchronous Motor, "en": Effective Network, "sp": Structure Preserving.
+ref_freq: <Double> - Reference frequency of the grid.
+net_name: <String> - Name of the network.
+N: <Int> - Amount of nodes.
+neighbors: <Int> - Neighbours for Small-World network only.
+pth: <Double> - Rewiring probability for Small-World network only. Number in the range [0, 1]
+mean_degree: <Double> - Desired mean connection degree for Random network only.
+consumers: <Int> - Amount of consumers in the Quasiregular network only.
+give_initstate_list: <List> - If the first element of the list is the string "no", this program will create an initial state file.
+				Otherwise, each position of the list must be a string that gives the path and name of the initial state file you want to use.
+init_ang: <String> - Initial condition for all phases if you will create the initial state file. Either "random" or "zeros".
+init_vel: <String> - Initial condition for all phase velocities if you will create the initial state file. Either "random" or "zeros".
+tini: <Double> - Initial time for the simulation.
+tfin: <Double> - Final time for the simulation.
+steps_to_print: <Int> - How many integration steps to simulate before printing data in the output file.
+mx_step: <Double> - Integration step.
+
+To sweep over a range of coupling strength values:
+
+kini: <Double> - Initial coupling stregth.
+kfin: <Double> - Final coupling stregth.
+kstep: <Double> - Step for the coupling stregth sweep.
+t_disturb: <Double> - Time at which a disturbance occurs. If none then choose t_disturb > tfin.
+t_recover: <Double> - Time at which the system recovers from a disturbance. If none then choose t_recover > tfin.
+delt_d: <Double> - Proportion of small generators.
+num_init_files: <Int> - How many different initial conditions want to try (if "random" initial conditions where chosen).
+mag_d: <Double> - Factor used to amplify the magnitude of the Y_bus matrix of a grid case if that kind of network was chosen.
+re_d: <Double> - Factor used to amplify the real part of the Y_bus matrix of a grid case if that kind of network was chosen.
+im_d: <Double> - Factor used to amplify the imaginary part of the Y_bus matrix of a grid case if that kind of network was chosen.
+to_plot_net: <Boolean> - To create an image of the generated network or not.
+
+OUTPUT:
+For each network built, this program generates 3 text files:
+- A file in the folder Networks/ which contains the parameters of the network you want to simulate.
+- A file in the folder Initial_States/ which contains the information about the initial conditions for phase and phase velocity of every node.
+- A file in the folder Sim_Settings/ which contains the simulation settings.
+'''
 	network_file = "Networks/" + net_name + "_.txt"
 
 	if (type_net == "sw"):
@@ -207,19 +250,21 @@ def create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, 
 			create_system(network_file, initstate_file, settings_file, tini, tfin, steps_to_print, mx_step, 1, 1, 1, t_disturb, t_recover, dyn_model)
 			k_actual = k_actual + kstep
 	else:
-		if (give_initstate_list == "no"):
+		if (give_initstate_list[0] == "no"):
 			for init_index in range(num_init_files):
 				initstate_file = "Initial_States/initstate_" + net_name + "_{}_.txt".format(init_index)
 				settings_file = "Sim_Settings/set_" + net_name + "_{}_.txt".format(init_index)
-				os.system("python3 generate_init_state.py -nodes {} -init_ang {} -init_vel {} -initstate_file {}".format(N, init_ang, init_vel, initstate_file))
-				os.system("python3 create_system.py -net_file {} -initstate_file {} -sets_file {} -tini {} -tfin {} -steps_to_print {} -mx_step {} -kini {} -kfin {} -kstep {} -t_disturb {} -t_recover {} -model {}".format(network_file, initstate_file, settings_file, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, dyn_model))
+				generate_initstate(N, init_ang, init_vel, initstate_file)
+				create_system(network_file, initstate_file, settings_file, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, dyn_model)
 		else:
 			for init_index in range(len(give_initstate_list)):
 				initstate_file = give_initstate_list[init_index]
 				settings_file = "Sim_Settings/set_" + net_name + "_{}_.txt".format(init_index)
-				os.system("python3 create_system.py -net_file {} -initstate_file {} -sets_file {} -tini {} -tfin {} -steps_to_print {} -mx_step {} -kini {} -kfin {} -kstep {} -t_disturb {} -t_recover {} -model {}".format(network_file, initstate_file, settings_file, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, dyn_model))
+				create_system(network_file, initstate_file, settings_file, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, dyn_model)
 
+				
 
+################################################################################################################
 
 
 
@@ -287,6 +332,3 @@ def main():
 		print(" Nodes:",  N, "\n", "Sum of vector P:", np.sum(P))
 		create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, net_name, N, neighbors, pth, mean_degree, consumers, give_initstate_list, init_ang, init_vel, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, delt_d, num_init_files)
 
-
-if __name__ == '__main__':
-	main()
