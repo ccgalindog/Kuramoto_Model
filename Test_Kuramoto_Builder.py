@@ -1,3 +1,8 @@
+import numpy as np
+import os
+from sklearn.utils import shuffle
+import start_kuramoto_system
+
 def main():
 	# Parameters:
 	for num_simulation in range(1):
@@ -21,8 +26,6 @@ def main():
 			net_name = "{}_{}_net_{}_deltd_{}".format(type_net, dyn_model, num_simulation, delt_d) # Name for the network
 		else:
 			net_name = "{}_{}".format(type_net, dyn_model) # Name for the network
-
-
 
 		ref_freq = 60
 		Po = 1 # Normalization factor for power units
@@ -52,12 +55,16 @@ def main():
 		## Enter your code here to define P and alfa as numpy arrays or use the default constructor given:
 
 		damp = 1 # Assumming same alfa for every node
-		N, P, alf = default_constructor(type_net, dyn_model, delt_d, consumers, Pc, Psg, Pbg, damp) 
+		N, P, alf = start_kuramoto_system.default_constructor(type_net, dyn_model, delt_d, consumers, Pc, Psg, Pbg, damp) 
 		
 		force = 1 # Strength of the perturbance applied equally to all consumers
-		P_disturbed = disturbe_all_consumers(P, N, force)
+		P_disturbed = start_kuramoto_system.disturbe_all_consumers(P, N, force)
 
 		##
 
 		print(" Nodes:",  N, "\n", "Sum of vector P:", np.sum(P))
-		create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, net_name, N, neighbors, pth, mean_degree, consumers, give_initstate_list, init_ang, init_vel, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, delt_d, num_init_files)
+		start_kuramoto_system.create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, net_name, N, neighbors, pth, mean_degree, consumers, give_initstate_list, init_ang, init_vel, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, delt_d, num_init_files)
+
+		
+if __name__ == '__main__':
+	main()
