@@ -3,6 +3,14 @@ import os
 from sklearn.utils import shuffle
 import make_kuramoto_graph as mk_graph
 
+# In this file the following functions are located:
+# get_to_run_file
+# create_system
+# default_constructor
+# disturbe_all_consumers
+# generate_initstate
+# create_simulation_files
+
 def get_to_run_file(boost_dir):
 '''
 INPUT:
