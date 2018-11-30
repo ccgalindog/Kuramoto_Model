@@ -1,7 +1,7 @@
 import numpy as np
 import os
 from sklearn.utils import shuffle
-
+import make_kuramoto_graph as mk_graph
 
 def get_to_run_file(boost_dir):
 '''
@@ -69,14 +69,29 @@ Settings file with the information of the simulation that will be run.
 
 	
 def default_constructor(type_net, dyn_model, delt_d, consumers, Pc, Psg, Pbg, damp):
+'''
+Default constructor for the parameters of a network.
+INPUT:
+type_net: <String> - Type of the network.
+dyn_model: <String> - Dynamical model. Either "sm", "sp" or "en"
+delt_d: <Double> - Proportion of distributed generation. Value in the range [0,1]
+consumers: <Int> - Amount of consumers.
+Pc: <Double> - Power drained by each consumer.
+Psg: <Double> - Power of small generators.
+Pbg: <Double> - Power of big generators.
+damp: <Double> - Damping, assummed equal for every node.
+OUTPUT:
+N: <Int> - Total number of nodes.
+P: <Numpy array> - Power of each node.
+alf: <Numpy array> - Damping of each node.
 
+'''
 	if (type_net == "2n"):
 		N = 2
 		P = (np.zeros((1, N)))
 		P[0,0] = Pbg
 		P[0,1] = Pc
 		alf = (damp*np.ones((1, N)))
-
 	elif (type_net == "case9"): # Something by default, values won't matter
 		if (dyn_model == "sm"):
 			N = 9
@@ -88,14 +103,11 @@ def default_constructor(type_net, dyn_model, delt_d, consumers, Pc, Psg, Pbg, da
 		P[0,0] = Pbg
 		P[0,1] = Pc
 		alf = (damp*np.ones((1, N)))	
-
 	else:
 		Nsg = int(round(-(delt_d*consumers*Pc)/Psg)) # Amount of small generators
 		Nbg = int(round(-(consumers*Pc + Nsg*Psg)/Pbg)) # Amount of big generators
 		N = consumers + Nbg + Nsg
-
 		P = (np.zeros((1, N)))
-
 		for k in range(N):
 			if (k < Nbg):
 				P[0,k] = Pbg
@@ -103,9 +115,7 @@ def default_constructor(type_net, dyn_model, delt_d, consumers, Pc, Psg, Pbg, da
 				P[0,k] = Psg
 			else:
 				P[0,k] = Pc
-
 		alf = (damp*np.ones((1, N)))
-
 		if (type_net == "sw"): # For SmallWorld network shuffle the nodes
 			am1 = P.shape[1]
 			randomize = np.arange(am1)
@@ -116,7 +126,19 @@ def default_constructor(type_net, dyn_model, delt_d, consumers, Pc, Psg, Pbg, da
 	return N, P, alf
 
 
+
+##############################################################################################################
+
+
+
 def disturbe_all_consumers(P, N, force):
+'''
+Default disturbance creation. Take a power distribution and at some time adds an increased demand from every consumer.
+INPUT:
+P: <NUmpy array> - Power at each node.
+N: <Int> - Number of nodes.
+force: <Double> - Value that multiplies the power o every consumer in the disturbance.
+'''
 	P_disturbed = (np.zeros((1, N)))
 	for i in range(P.shape[1]):
 		if P[0, i] < 0:
@@ -127,34 +149,53 @@ def disturbe_all_consumers(P, N, force):
 
 
 
-def create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, net_name, N, neighbors, pth, mean_degree, consumers, give_initstate_list, init_ang, init_vel, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, delt_d, num_init_files):
-	# Encoding P and alfa:
-	P = P.tolist()[0]
-	P_disturbed = P_disturbed.tolist()[0]
-	alf = alf.tolist()[0]
-	P = str(P)
-	P = P.replace(" ", "_")
-	P_disturbed = str(P_disturbed)
-	P_disturbed = P_disturbed.replace(" ", "_")
-	alf = str(alf)
-	alf = alf.replace(" ", "_")
+#################################################################################################################
 
-	# Construct simulation files:
+
+
+def generate_initstate(nodes, init_ang, init_vel, initstate_file):
+'''
+Creates an initial state file for the simulation with either zeros or random conditions.
+INPUT:
+nodes: <Int> - Amount of nodes.
+init_ang: <String> - Initial phases, either "zeros" or "random".
+init_vel: <String> - Initial phase velocities, either "zeros" or "random".
+initstate_file: <String> - Name for the initial state file to be created.
+'''
+	if (init_ang == "random"):
+		theta_0 = 2*np.pi*np.random.rand(nodes)
+	if (init_ang == "zeros"):
+		theta_0 = np.zeros(nodes)	
+	if (init_vel == "random"):
+		dot_theta_0 = 20*np.random.rand(nodes)
+	if (init_vel == "zeros"):
+		dot_theta_0 = np.zeros(nodes)
+	x0 = np.concatenate((theta_0, dot_theta_0))
+	file_init_state = open(initstate_file,"w")
+	for an_x in x0:
+		file_init_state.write("{} \n".format(an_x)) 
+	file_init_state.close()
+
+
 	
+#################################################################################################################
+
+
+
+def create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, net_name, N, neighbors, pth, mean_degree, consumers, give_initstate_list, init_ang, init_vel, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, delt_d, num_init_files,  mag_d, re_d, im_d, to_plot_net):
 	
 	network_file = "Networks/" + net_name + "_.txt"
 
 	if (type_net == "sw"):
-		os.system("python3 make_smallworld_graph.py -nodes {} -neighbors {} -pth {} -net_name {} -powers {} -powers_disturb {} -alfas {} -delt_d {}".format(N, neighbors, pth, net_name, P, P_disturbed, alf, delt_d))
+		mk_graph.build_smallworld_graph(N, neighbors, pth, net_name, P, P_disturbed, alf, delt_d, to_plot_net)
 	elif (type_net == "rd"):
-		os.system("python3 make_random_graph.py -nodes {} -m_degree {} -net_name {} -powers {} -powers_disturb {} -alfas {} -delt_d {}".format(N, mean_degree, net_name, P, P_disturbed, alf, delt_d))
+		mk_graph.build_random_graph(N, mean_degree, net_name, P, P_disturbed, alf, delt_d, to_plot_net)
 	elif (type_net == "qr"):
-		os.system("python3 make_quasiregular_graph.py -nodes {} -consumers {} -net_name {} -powers {} -powers_disturb {} -alfas {} -delt_d {}".format(N, consumers, net_name, P, P_disturbed, alf, delt_d))
+		mk_graph.build_quasiregular_graph(N, consumers, net_name, P, P_disturbed, alf, delt_d, to_plot_net)
 	elif (type_net == "2n"):
-		os.system("python3 make_2node_graph.py -net_name {} -powers {} -powers_disturb {} -alfas {}".format(net_name, P, P_disturbed, alf))
+		mk_graph.build_2node_graph(net_name, P, P_disturbed, alf, to_plot_net)
 	elif (type_net[0:4] == "case"):
-		os.system("python3 make_gridcase_graph.py -case {} -model {} -ref_freq {} -start_speed {} -k_alt_ini {} -k_alt_fin {} -k_alt_step {}".format(type_net, dyn_model, ref_freq, init_vel, kini, kfin, kstep))
-
+		mk_graph.build_gridcase_graph(type_net, dyn_model, ref_freq, kini, kfin, kstep, mag_d, re_d, im_d, init_vel, to_plot_net)
 		
 	if (type_net[0:4] == "case"):
 		k_actual = kini
@@ -163,10 +204,8 @@ def create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, 
 			network_file = "Networks/" + net_name + "_.txt"
 			initstate_file = "Initial_States/initstate_" + net_name + "_.txt"
 			settings_file = "Sim_Settings/set_" + net_name + "_.txt"
-			os.system("python3 create_system.py -net_file {} -initstate_file {} -sets_file {} -tini {} -tfin {} -steps_to_print {} -mx_step {} -kini {} -kfin {} -kstep {} -t_disturb {} -t_recover {} -model {}".format(network_file, initstate_file, settings_file, tini, tfin, steps_to_print, mx_step, 1, 1, 1, t_disturb, t_recover, dyn_model))
+			create_system(network_file, initstate_file, settings_file, tini, tfin, steps_to_print, mx_step, 1, 1, 1, t_disturb, t_recover, dyn_model)
 			k_actual = k_actual + kstep
-
-
 	else:
 		if (give_initstate_list == "no"):
 			for init_index in range(num_init_files):
