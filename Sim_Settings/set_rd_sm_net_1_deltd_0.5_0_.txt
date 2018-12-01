@@ -1,0 +1,12 @@
+T_ini: 0.0 
+T_fin: 60.0 
+Print_steps: 10 
+T_max_step: 0.01 
+T_disturb: 2000000.0 
+T_recover: 2000010.0 
+K_ini: 1.0 
+K_fin: 1.5 
+K_step: 1.0 
+Network_file: Networks/rd_sm_net_1_deltd_0.5_.txt 
+Initial_state_file: Initial_States/initstate_rd_sm_net_1_deltd_0.5_0_.txt 
+Model: sm 

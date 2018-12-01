@@ -76,7 +76,7 @@ def create_system(net_file, initstate_file, sets_file, tini, tfin, steps_to_prin
 
 
 	
-def default_constructor(type_net, dyn_model, delt_d, consumers, Pc, Psg, Pbg, damp):
+def default_constructor(type_net, dyn_model, consumers, delt_d, Pc, Psg, Pbg, damp):
 	'''
 	Default constructor for the parameters of a network.
 	INPUT:
@@ -190,7 +190,7 @@ def generate_initstate(nodes, init_ang, init_vel, initstate_file):
 
 
 
-def create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, net_name, N, init_ang, init_vel, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, num_init_files, to_plot_net, **kwargs):
+def create_simulation_files(type_net, dyn_model, net_name, init_ang, init_vel, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, num_init_files, to_plot_net, **kwargs):
 	'''
 	Creates the files needed for the simulation.
 	INPUT:
@@ -234,6 +234,9 @@ def create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, 
 	- A file in the folder Initial_States/ which contains the information about the initial conditions for phase and phase velocity of every node.
 	- A file in the folder Sim_Settings/ which contains the simulation settings.
 	'''
+	P = kwargs.get('P', None)
+	P_disturbed = kwargs.get('P_disturbed', None)
+	alf = kwargs.get('alf', None)
 	delt_d = kwargs.get('delt_d', None)
 	neighbors = kwargs.get('neighbors', None)
 	pth = kwargs.get('pth', None)
@@ -243,6 +246,8 @@ def create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, 
 	mag_d = kwargs.get('mag_d', None)
 	re_d = kwargs.get('re_d', None)
 	im_d = kwargs.get('im_d', None)
+	ref_freq = kwargs.get('ref_freq', None)
+	N = kwargs.get('N', None)
 
 	network_file = "Networks/" + net_name + "_.txt"
 
@@ -259,7 +264,7 @@ def create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, 
 		
 	if (type_net[0:4] == "case"):
 		k_actual = kini
-		while (k_actual < kfin):
+		while (k_actual <= kfin):
 			net_name = type_net + "_kinit_{:.3g}_".format(k_actual) + dyn_model 
 			network_file = "Networks/" + net_name + "_.txt"
 			initstate_file = "Initial_States/initstate_" + net_name + "_.txt"

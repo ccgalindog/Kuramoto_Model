@@ -70,7 +70,7 @@ def main():
 
 		print(" Nodes:",  N, "\n", "Sum of vector P:", np.sum(P))
 		#start_kuramoto_system.create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, net_name, N, init_ang, init_vel, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, num_init_files, to_plot_net, delt_d = delt_d, neighbors = neighbors, pth = pth, mean_degree = mean_degree, consumers = consumers, give_initstate_list = give_initstate_list, mag_d = mag_d, re_d = re_d, im_d = im_d)
-		start_kuramoto_system.create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, net_name, N, init_ang, init_vel, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, num_init_files, to_plot_net, delt_d = delt_d, mean_degree = mean_degree)
+		start_kuramoto_system.create_simulation_files(type_net, dyn_model, ref_freq, net_name, N, init_ang, init_vel, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, num_init_files, to_plot_net, P = P, P_disturbed = P_disturbed, alf = alf, delt_d = delt_d, mean_degree = mean_degree)
 	start_kuramoto_system.get_to_run_file(boost_dir)
 		
 if __name__ == '__main__':
