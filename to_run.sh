@@ -1,1 +1,2 @@
-c++ -O3 -Wall -ffast-math -std=c++11 -I /home/cristian/boost_1_68_0 kuramoto_functions.o main_kuramoto.cpp -o main_kuramoto_grid_0 && time ./main_kuramoto_grid_0>Results/Testing_out.txt Sim_Settings/set_qr_sm_net_0_deltd_0.5_0_.txt
+c++ -O3 -Wall -ffast-math -std=c++11 -I /home/cristian/boost_1_68_0 kuramoto_functions.o main_kuramoto.cpp -o main_kuramoto_grid_0 && time ./main_kuramoto_grid_0>Results/Testing_out.txt Sim_Settings/set_rd_sm_net_0_deltd_0.5_0_.txt
+c++ -O3 -Wall -ffast-math -std=c++11 -I /home/cristian/boost_1_68_0 kuramoto_functions.o main_kuramoto.cpp -o main_kuramoto_grid_1 && time ./main_kuramoto_grid_1>Results/Testing_out.txt Sim_Settings/set_qr_sm_net_0_deltd_0.5_0_.txt

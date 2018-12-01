@@ -190,7 +190,7 @@ def generate_initstate(nodes, init_ang, init_vel, initstate_file):
 
 
 
-def create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, net_name, N, neighbors, pth, mean_degree, consumers, give_initstate_list, init_ang, init_vel, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, delt_d, num_init_files,  mag_d, re_d, im_d, to_plot_net):
+def create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, net_name, N, init_ang, init_vel, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, num_init_files, to_plot_net, **kwargs):
 	'''
 	Creates the files needed for the simulation.
 	INPUT:
@@ -206,8 +206,7 @@ def create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, 
 	pth: <Double> - Rewiring probability for Small-World network only. Number in the range [0, 1]
 	mean_degree: <Double> - Desired mean connection degree for Random network only.
 	consumers: <Int> - Amount of consumers in the Quasiregular network only.
-	give_initstate_list: <List> - If the first element of the list is the string "no", this program will create an initial state file.
-					Otherwise, each position of the list must be a string that gives the path and name of the initial state file you want to use.
+	give_initstate_list: <List> - Each position of the list must be a string that gives the path and name of the initial state file you want to use, if none, the initial state will be generated.
 	init_ang: <String> - Initial condition for all phases if you will create the initial state file. Either "random" or "zeros".
 	init_vel: <String> - Initial condition for all phase velocities if you will create the initial state file. Either "random" or "zeros".
 	tini: <Double> - Initial time for the simulation.
@@ -235,6 +234,16 @@ def create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, 
 	- A file in the folder Initial_States/ which contains the information about the initial conditions for phase and phase velocity of every node.
 	- A file in the folder Sim_Settings/ which contains the simulation settings.
 	'''
+	delt_d = kwargs.get('delt_d', None)
+	neighbors = kwargs.get('neighbors', None)
+	pth = kwargs.get('pth', None)
+	mean_degree = kwargs.get('mean_degree', None)
+	consumers = kwargs.get('consumers', None)
+	give_initstate_list = kwargs.get('give_initstate_list', None)
+	mag_d = kwargs.get('mag_d', None)
+	re_d = kwargs.get('re_d', None)
+	im_d = kwargs.get('im_d', None)
+
 	network_file = "Networks/" + net_name + "_.txt"
 
 	if (type_net == "sw"):
@@ -258,7 +267,7 @@ def create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, 
 			create_system(network_file, initstate_file, settings_file, tini, tfin, steps_to_print, mx_step, 1, 1, 1, t_disturb, t_recover, dyn_model)
 			k_actual = k_actual + kstep
 	else:
-		if (give_initstate_list[0] == "no"):
+		if (give_initstate_list is None):
 			for init_index in range(num_init_files):
 				initstate_file = "Initial_States/initstate_" + net_name + "_{}_.txt".format(init_index)
 				settings_file = "Sim_Settings/set_" + net_name + "_{}_.txt".format(init_index)

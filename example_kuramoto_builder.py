@@ -8,7 +8,7 @@ def main():
 	boost_dir = "/home/cristian/boost_1_68_0"
 	for num_simulation in range(1):
 
-		type_net = "qr" # Pick either "sw" : Smallworld; "rd" : Random; "qr" : QuasiRegular; "2n" : Two-nodes
+		type_net = "rd" # Pick either "sw" : Smallworld; "rd" : Random; "qr" : QuasiRegular; "2n" : Two-nodes
 		dyn_model = "sm" # Pick either "sm": Synchronous Motor, "sp": Structure Preserving, "en": Effective Network
 		
 		# Defining Initial Conditions:
@@ -69,7 +69,8 @@ def main():
 		##
 
 		print(" Nodes:",  N, "\n", "Sum of vector P:", np.sum(P))
-		start_kuramoto_system.create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, net_name, N, neighbors, pth, mean_degree, consumers, give_initstate_list, init_ang, init_vel, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, delt_d, num_init_files, mag_d, re_d, im_d, to_plot_net)
+		#start_kuramoto_system.create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, net_name, N, init_ang, init_vel, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, num_init_files, to_plot_net, delt_d = delt_d, neighbors = neighbors, pth = pth, mean_degree = mean_degree, consumers = consumers, give_initstate_list = give_initstate_list, mag_d = mag_d, re_d = re_d, im_d = im_d)
+		start_kuramoto_system.create_simulation_files(P, P_disturbed, alf, type_net, dyn_model, ref_freq, net_name, N, init_ang, init_vel, tini, tfin, steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, num_init_files, to_plot_net, delt_d = delt_d, mean_degree = mean_degree)
 	start_kuramoto_system.get_to_run_file(boost_dir)
 		
 if __name__ == '__main__':
