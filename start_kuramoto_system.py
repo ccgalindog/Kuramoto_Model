@@ -114,7 +114,7 @@ def default_constructor(type_net, dyn_model, consumers, delt_d, Pc, Psg, Pbg, da
 	else:
 		Nsg = int(round(-(delt_d*consumers*Pc)/Psg)) # Amount of small generators
 		Nbg = int(round(-(consumers*Pc + Nsg*Psg)/Pbg)) # Amount of big generators
-		N = consumers + Nbg + Nsg
+		N = int(consumers + Nbg + Nsg)
 		P = (np.zeros(N))
 		for k in range(N):
 			if (k < Nbg):
