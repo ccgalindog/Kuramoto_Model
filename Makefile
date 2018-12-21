@@ -3,7 +3,7 @@ flags := -O3 -Wall -ffast-math -std=c++11
 boost := /home/cristian/boost_1_68_0
 
 
-all: build run
+all: build
 
 build: main_kuramoto_grid_0
 

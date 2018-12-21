@@ -171,6 +171,13 @@ def build_quasiregular_graph(nodes, consumers, net_name, powers, powers_disturb,
 	P = list()
 	link_list = list()
 
+	R_Matrix = 5*np.random.rand(K.shape[0], K.shape[1])
+	R_Matrix = R_Matrix + R_Matrix.T
+
+
+	K = np.multiply( K,  R_Matrix)
+
+
 	for node_i in range(N):
 		alf.append([node_i, alfas[node_i]])
 		if powers[node_i] > 0:
@@ -178,8 +185,8 @@ def build_quasiregular_graph(nodes, consumers, net_name, powers, powers_disturb,
 		else:
 			P.append([node_i, 0.0, powers[node_i], powers_disturb[node_i]])
 		for node_j in range(N):
-			if (K[node_i][node_j] == 1):
-				link_list.append([node_i, node_j, 1])
+			if (K[node_i][node_j] != 0):
+				link_list.append([node_i, node_j, K[node_i][node_j]])
 
 	out_file = "Networks/" + net_name + "_.txt"
 
@@ -458,7 +465,17 @@ def SM_model(mpc2, est_dyn, Y0):
 	aE = abs(E)
 	A = Pi - (aE**2) * np.real(np.diag(Y_SM))
 	K = np.diag(aE) * np.abs(Y_SM) * np.diag(aE)
-	Gamm = np.angle(Y_SM+1e-10) - np.pi/2
+
+
+	Gamm = np.zeros( Y_SM.shape )
+
+	for i in range(Gamm.shape[0]):
+		for j in range(Gamm.shape[1]):
+			if (np.real(Y_SM[i,j]) == 0.0):
+				Gamm[i][j] = 0.0
+			else:
+				Gamm[i][j] = np.angle(Y_SM[i,j]) - np.pi/2
+
 	for i in range(Gamm.shape[0]):
 		for j in range(Gamm.shape[1]):
 			if (np.abs(Gamm[i,j]) < 1e-8):
@@ -513,7 +530,17 @@ def EN_model(mpc2, est_dyn, Y0):
 	aE = abs(E)
 	A = Pi - (aE**2) * np.real(np.diag(Y_EN))
 	K = np.diag(aE) * np.abs(Y_EN) * np.diag(aE)
-	Gamm = np.angle(Y_EN+1e-10) - np.pi/2
+	
+	Gamm = np.zeros( Y_EN.shape )
+
+	for i in range(Gamm.shape[0]):
+		for j in range(Gamm.shape[1]):
+			if (np.real(Y_EN[i,j]) == 0.0):
+				Gamm[i][j] = 0.0
+			else:
+				Gamm[i][j] = np.angle(Y_EN[i,j]) - np.pi/2
+
+
 	for i in range(Gamm.shape[0]):
 		for j in range(Gamm.shape[1]):
 			if (np.abs(Gamm[i,j]) < 1e-8):
@@ -569,7 +596,21 @@ def SP_model(mpc2, est_dyn, Y0):
 	K = DE*np.abs(Y_SP)*DE
 	aux1 = np.real(Y_SP) != 0
 	aux2 = np.imag(Y_SP) != 0
-	Gamm = np.angle(Y_SP+1e-10) - (np.pi/2)*(aux1+aux2)
+	#Gamm = np.angle(Y_SP+1e-10) - (np.pi/2)*(aux1+aux2)
+
+
+
+	Gamm = np.zeros( Y_SP.shape )
+
+	for i in range(Gamm.shape[0]):
+		for j in range(Gamm.shape[1]):
+			if (np.real(Y_SP[i,j]) == 0.0):
+				Gamm[i][j] = 0.0
+			else:
+				Gamm[i][j] = np.angle(Y_SP[i,j]) - (np.pi/2)*(aux1[i,j] + aux2[i,j])
+
+
+
 	for i in range(Gamm.shape[0]):
 		for j in range(Gamm.shape[1]):
 			if (np.abs(Gamm[i,j]) < 1e-8):
@@ -663,6 +704,8 @@ def build_gridcase_graph(case, model, ref_freq, k_alt_ini, k_alt_fin, k_alt_step
 		mpc, est_dyn = gridcase.case9(mag_d, re_d, im_d)
 	mpc2 = runpf(mpc)	
 	Y0, Yf, Yt = makeYbus(mpc2[0]['baseMVA'], mpc2[0]['bus'], mpc2[0]['branch'])
+
+
 	k_act = k_alt_ini
 	while (k_act < k_alt_fin):
 		net_name = case + "_kinit_{0:.3g}_".format(k_act) + model 

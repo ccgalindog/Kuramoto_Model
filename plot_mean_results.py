@@ -8,10 +8,11 @@ from glob import glob
 
 def main():
 
-	deltas_d = [0.0]
-	netkindes = ["case9"]
+	deltas_d = [0.0, 2.0, 1.0]
+	legends_list = ["EN", "SM", "SP"] 
+	netkindes = ["C9"]
 
-	colors = plt.cm.jet(np.linspace(0.2, 0.9,3))
+	colors = plt.cm.viridis(np.linspace(0.2, 0.9,3))
 	markers = ["*", "d", "o"]
 	
 
@@ -27,6 +28,7 @@ def main():
 		for deltd in deltas_d:
 
 			mean_files = glob("Results/{}/mean_results_{}*".format(deltd, netkind))
+
 			one_file = [line.rstrip('\n') for line in open(mean_files[0], "r")]
 
 			outname = mean_files[0].replace("Results/{}/mean_results_".format(deltd), "")
@@ -77,30 +79,30 @@ def main():
 			R_imag_inf_std = np.std(complete_mean_rimag, axis = 1)
 			V_inf_std = np.std(complete_mean_v, axis = 1)
 
-			ax1.scatter(complete_k, R_mag_inf_mean, marker = markers[kk], color = colors[kk])
+			# ax1.scatter(complete_k, R_mag_inf_mean, marker = markers[kk], color = colors[kk], label = r"$\Delta_p = {}$".format(deltd), s = 3)
 			# ax1.errorbar(complete_k, R_mag_inf_mean, yerr = R_mag_inf_std, color = colors[kk])
 			
-			ax2.scatter(complete_k, V_inf_mean, marker = markers[kk], color = colors[kk])
+			# ax2.scatter(complete_k, V_inf_mean, marker = markers[kk], color = colors[kk], label = r"$\Delta_p = {}$".format(deltd), s = 3)
 			# ax2.errorbar(complete_k, V_inf_mean, yerr = V_inf_std, color = colors[kk])
 			
-			ax3.scatter(complete_k, R_real_inf_mean, marker = markers[kk], color = colors[kk])
+			# ax3.scatter(complete_k, R_real_inf_mean, marker = markers[kk], color = colors[kk], label = r"$\Delta_p = {}$".format(deltd), s = 3)
 			# ax3.errorbar(complete_k, R_real_inf_mean, yerr = R_real_inf_std, color = colors[kk])
 
-			ax4.scatter(complete_k, R_imag_inf_mean, marker = markers[kk], color = colors[kk])
+			# ax4.scatter(complete_k, R_imag_inf_mean, marker = markers[kk], color = colors[kk], label = r"$\Delta_p = {}$".format(deltd), s = 3)
 			# ax4.errorbar(complete_k, R_imag_inf_mean, yerr = R_imag_inf_std, color = colors[kk])
 			
 
 			
-			# ax1.plot(complete_k, R_mag_inf_mean, marker = markers[kk], ms = 4, color = colors[kk], label = r"$\Delta_p = {}$".format(deltd))
+			ax1.plot(complete_k, R_mag_inf_mean, marker = markers[kk], ms = 4, color = colors[kk], label = r"{}".format(legends_list[kk]))
 			# # # ax1.errorbar(complete_k, R_mag_inf_mean, yerr = R_mag_inf_std, color = colors[kk])
 			
-			# ax2.plot(complete_k, V_inf_mean, marker = markers[kk], ms = 4, color = colors[kk], label = r"$\Delta_p = {}$".format(deltd))
+			ax2.plot(complete_k, V_inf_mean, marker = markers[kk], ms = 4, color = colors[kk], label = r"{}".format(legends_list[kk]))
 			# # # ax2.errorbar(complete_k, V_inf_mean, yerr = V_inf_std, color = colors[kk])
 			# # ax2.set_ylim([0, 0.2])
-			# ax3.plot(complete_k, R_real_inf_mean, marker = markers[kk], ms = 4, color = colors[kk], label = r"$\Delta_p = {}$".format(deltd))
+			ax3.plot(complete_k, R_real_inf_mean, marker = markers[kk], ms = 4, color = colors[kk], label = r"{}".format(legends_list[kk]))
 			# # # ax3.errorbar(complete_k, R_real_inf_mean, yerr = R_real_inf_std, color = colors[kk])
 			# # ax3.set_ylim([-0.3, 0.3])
-			# ax4.plot(complete_k, R_imag_inf_mean, marker = markers[kk], ms = 4, color = colors[kk], label = r"$\Delta_p = {}$".format(deltd))
+			ax4.plot(complete_k, R_imag_inf_mean, marker = markers[kk], ms = 4, color = colors[kk], label = r"{}".format(legends_list[kk]))
 			# # # ax4.errorbar(complete_k, R_imag_inf_mean, yerr = R_imag_inf_std, color = colors[kk])
 			
 
@@ -111,28 +113,42 @@ def main():
 		ax3.legend(loc="best", numpoints = 1, markerscale = 1.3, fontsize = 10)
 		ax4.legend(loc="best", numpoints = 1, markerscale = 1.3, fontsize = 10)
 		ax1.set_ylabel(r"$|r_\infty|$")
-		ax1.set_xlabel(r"$\frac{K}{P_o}$")
+		# ax1.set_xlabel(r"$\frac{K}{P_o}$")
 		ax1.set_ylim([0, 1])
-		# ax2.set_ylim([0, 1])
+		ax2.set_ylim([0, 10])
 		ax2.set_ylabel(r"$v_\infty$")
+
+		ax1.set_xlim([0, 20.0])
+		ax2.set_xlim([0, 20.0])
+		ax3.set_xlim([0, 20.0])
+		ax4.set_xlim([0, 20.0])
+
 		# ax1.set_xlim([-2, 12])
-		# ax2.set_xlim([-2, 12])
+		#ax2.set_xlim([0, 10])
 		# ax3.set_xlim([-2, 12])
 		# ax4.set_xlim([-2, 12])
-		ax2.set_xlabel(r"$\frac{K}{P_o}$")
+		# ax2.set_xlabel(r"$\frac{K}{P_o}$")
 		ax3.set_ylabel(r"$I\!Re [r_\infty]$")
-		ax3.set_xlabel(r"$\frac{K}{P_o}$")
+		# ax3.set_xlabel(r"$\frac{K}{P_o}$")
 		# ax3.set_xlim([0, 2])
 		ax3.set_ylim([-1.2, 1.2])
 		ax4.set_ylabel(r"$I\!Im [r_\infty]$")
-		ax4.set_xlabel(r"$\frac{K}{P_o}$")
+		# ax4.set_xlabel(r"$\frac{K}{P_o}$")
+
+		ax1.set_xlabel(r"$\frac{Y}{Y_o}$")
+		ax2.set_xlabel(r"$\frac{Y}{Y_o}$")
+		ax3.set_xlabel(r"$\frac{Y}{Y_o}$")
+		ax4.set_xlabel(r"$\frac{Y}{Y_o}$")
+
+
+
 		ax4.set_ylim([-1.2, 1.2])
 		ax1.grid()
 		ax2.grid()
 		ax3.grid()
 		ax4.grid()
 		plt.tight_layout()
-		plt.savefig("Images/" + outname + "_meanresults_{}_all_SM_loss.pdf".format(columns))
+		plt.savefig("Images/" + outname + "_meanresults_{}_all_models_loss_2.pdf".format(columns))
 		plt.close()	
 
 
