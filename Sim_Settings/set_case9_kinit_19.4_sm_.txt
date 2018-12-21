@@ -1,0 +1,12 @@
+T_ini: 0.0 
+T_fin: 500.0 
+Print_steps: 1000 
+T_max_step: 0.0001 
+T_disturb: 2000000.0 
+T_recover: 2000010.0 
+K_ini: 1 
+K_fin: 1 
+K_step: 1 
+Network_file: Networks/case9_kinit_19.4_sm_.txt 
+Initial_state_file: Initial_States/initstate_case9_kinit_19.4_sm_.txt 
+Model: sm 
