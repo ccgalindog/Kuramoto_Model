@@ -1,3 +1,3 @@
 Simulation finished !! 
-Network: Networks/case9_kinit_19.8_sp__
-Initial State: Initial_States/initstate_case9_kinit_19.8_sp__
+Network: Networks/qr_sm_net_0_deltd_0.5__
+Initial State: Initial_States/initstate_qr_sm_net_0_deltd_0.5_0__

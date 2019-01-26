@@ -682,10 +682,11 @@ def get_kuramoto_net(A, K_hat, Gamm, est_dyn, model, ref_freq, gtb):
 ####################################
 
 
-def build_gridcase_graph(case, model, ref_freq, k_alt_ini, k_alt_fin, k_alt_step, mag_d, re_d, im_d, start_speed, to_plot):
+def build_gridcase_graph(net_name, case, model, ref_freq, k_alt_ini, k_alt_fin, k_alt_step, mag_d, re_d, im_d, start_speed, to_plot):
 	'''
 	This function creates a graph from a real power grid given by a pypsa case 
 	INPUT:
+	net_name: <String> - Network name.
 	case: <String> - Grid case name. Example: "case9".
 	model: <String> - either "sm", "sp" or "en".
 	ref_freq: <Double> - Reference frequency.
@@ -708,7 +709,7 @@ def build_gridcase_graph(case, model, ref_freq, k_alt_ini, k_alt_fin, k_alt_step
 
 	k_act = k_alt_ini
 	while (k_act < k_alt_fin):
-		net_name = case + "_kinit_{0:.3g}_".format(k_act) + model 
+		net_name = net_name + "_kinit_{0:.3g}".format(k_act) 
 		Y0_now = k_act*Y0
 		if (model == "en"):
 			A, K_hat, Gamm, phi, Node_Type = EN_model(mpc2, est_dyn, Y0_now)

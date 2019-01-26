@@ -260,12 +260,12 @@ def create_simulation_files(type_net, dyn_model, net_name, init_ang, init_vel, t
 	elif (type_net == "2n"):
 		mk_graph.build_2node_graph(net_name, P, P_disturbed, alf, to_plot_net)
 	elif (type_net[0:4] == "case"):
-		mk_graph.build_gridcase_graph(type_net, dyn_model, ref_freq, kini, kfin, kstep, mag_d, re_d, im_d, init_vel, to_plot_net)
+		mk_graph.build_gridcase_graph(net_name, type_net, dyn_model, ref_freq, kini, kfin, kstep, mag_d, re_d, im_d, init_vel, to_plot_net)
 		
 	if (type_net[0:4] == "case"):
 		k_actual = kini
 		while (k_actual <= kfin):
-			net_name = type_net + "_kinit_{:.3g}_".format(k_actual) + dyn_model 
+			net_name = net_name + "_kinit_{:.3g}".format(k_actual) 
 			network_file = "Networks/" + net_name + "_.txt"
 			initstate_file = "Initial_States/initstate_" + net_name + "_.txt"
 			settings_file = "Sim_Settings/set_" + net_name + "_.txt"

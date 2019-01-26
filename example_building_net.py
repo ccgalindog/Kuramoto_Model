@@ -3,25 +3,25 @@ import start_kuramoto_system
 
 def main():
 	boost_dir = "/home/cristian/boost_1_68_0"
-	for num_simulation in range(0, 1):
-		type_net = "case9" # Pick either "sw" : Smallworld; "rd" : Random; "qr" : QuasiRegular; "2n" : Two-nodes
-		dyn_model = "en" # Pick either "sm": Synchronous Motor, "sp": Structure Preserving, "en": Effective Network
+	for num_simulation in range(2, 4):
+		type_net = "qr" # Pick either "sw" : Smallworld; "rd" : Random; "qr" : QuasiRegular; "2n" : Two-nodes
+		dyn_model = "sm" # Pick either "sm": Synchronous Motor, "sp": Structure Preserving, "en": Effective Network
 		init_ang = "random" # Initial state for phases. Pick either "random" or "zeros"
 		init_vel = "zeros" # Initial state for phase velocities. Pick either "random" or "zeros"
 		num_init_files = 1 # How many different initial conditions want to try
 		tini = 0.0 # Initial simulation time
-		tfin = 500.0 # Final simulation time
-		mx_step = 0.0001 # Step size for integration
-		steps_to_print = 1000 # Print output data each "steps_to_print" simulation steps
+		tfin = 1000.0 # Final simulation time
+		mx_step = 0.001 # Step size for integration
+		steps_to_print = 100 # Print output data each "steps_to_print" simulation steps
 		# If no disturbance needed in P for this simulation then choose t_disturb and t_recover > tfin
-		t_disturb = 2000000.0 # Time at which a disturbance occurs in P of the network
-		t_recover = 2000010.0 # Time at which P of the network recovers
+		t_disturb = 500.0 # Time at which a disturbance occurs in P of the network
+		t_recover = 510.0 # Time at which P of the network recovers
 		# To sweep for many values of coupling strength k: 
 		# If you need to simulate only for one specific k then choose kfin = kini. 
-		kini = 0.1 # Initial k strength
-		kfin = 20.0 # Final k strength
-		kstep = 0.1 # Steps of k strength to simulate
-		force = 1 # Strength of the perturbance applied equally to all consumers
+		kini = 8.0 # Initial k strength
+		kfin = 8.1 # Final k strength
+		kstep = 0.2 # Steps of k strength to simulate
+		force = 30 # Strength of the perturbance applied equally to all consumers
 		
 		to_plot_net = True
 
@@ -96,16 +96,19 @@ def main():
 
 
 		else:
+
+			#for some_mag in (np.arange( 0.05, 4.0, 0.05 )):
+
 			mag_d = 1.0
-			re_d = 1.0 
-			im_d = 1.0
+			re_d = 0.0 
+			im_d = 1.0 
 			ref_freq = 60
 
 			if ((type_net == "sw") or (type_net == "rd") or (type_net == "qr")):
 				net_name = "{}_{}_net_{}_deltd_{}".format(type_net, dyn_model, num_simulation, delt_d) # Name for the network
 			else:
-				net_name = "{}_{}".format(type_net, dyn_model) # Name for the network
-
+				net_name = "{}_{}_net_{}_mag_{}".format(type_net, dyn_model, num_simulation, mag_d) # Name for the network
+			print(net_name)
 			start_kuramoto_system.create_simulation_files(type_net, dyn_model, net_name, init_ang, init_vel, tini, tfin, \
 														  steps_to_print, mx_step, kini, kfin, kstep, t_disturb, t_recover, \
 														  num_init_files, to_plot_net, mag_d = mag_d, re_d = re_d, im_d = im_d, ref_freq=ref_freq)

@@ -1,0 +1,13 @@
+net0: 2*all
+net1: 2*first
+net2: 2*second
+net3: 2*third
+net4: 10*all
+net5: 10*first
+net6: 10*second
+net7: 10*third
+net8: normal
+net9: 100*all
+net10: 100*first
+net11: 100*second
+net12: 100*third

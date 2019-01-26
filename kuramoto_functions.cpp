@@ -219,7 +219,7 @@ void kuramoto_1st_order::operator() ( const state_type &x , state_type &dxdt , c
 
 	// OBSERVER:
 
-		std::string out_string;
+	std::string out_string;
 	if ((t > Kuramoto_i.t_disturb) && (Kuramoto_i.damage_key == 0))
 	{
 		for (int i = 0; i < Kuramoto_i.N; i++) {
@@ -424,6 +424,7 @@ kuramoto_system get_parameters(std::ifstream &params_file, kuramoto_system Kuram
 				ni = std::strtof((params_divided[0]).c_str(),0);
 				Kuramoto_i.Node_type[ni] = std::strtof((params_divided[1]).c_str(),0);
 				Kuramoto_i.P[ni] = std::strtof((params_divided[2]).c_str(),0);
+				Kuramoto_i.P_initial[ni] = Kuramoto_i.P[ni];
 				Kuramoto_i.P_disturbed[ni] = std::strtof((params_divided[3]).c_str(),0);}
 
 			else if ( (indk > 3 + n_links + n_nodes) && (indk < 4 + n_links + 2*n_nodes) ){

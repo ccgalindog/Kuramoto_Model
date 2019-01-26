@@ -2,18 +2,18 @@ import kuramoto_graphic
 import stead_results
 
 def main():
-	result_file = "Results/out_case9_kinit_34.5_sm_k_1.000000_.txt"
+	result_file = "Results/out_qr_sm_net_3_deltd_0.5_0_k_8.000000_.txt"
 
 	# # For time evolution:
-	# stead_points = 200
-	# wrap_pi = True
-	# kuramoto_graphic.plot_time_evolution(result_file, stead_points, wrap_pi)
+	stead_points = 200
+	wrap_pi = True
+	kuramoto_graphic.plot_time_evolution(result_file, stead_points, wrap_pi)
 
 	# # For steady state average results:
-	folders = ["Results/sm/"]
-	mean_names = ["C9"]
-	key_index = -5
-	stead_results.get_mean_results(300, 0.0001, 1000, folders, mean_names, key_index)
+	# folders = ["Results/"]
+	# mean_names = ["C9"]
+	# key_index = -7
+	# stead_results.get_mean_results(300, 0.001, 100, folders, mean_names, key_index)
 
 	# For Gifs:
 	# out_name = "To_Gif/some_gif.gif"

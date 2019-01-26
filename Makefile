@@ -9,7 +9,7 @@ build: main_kuramoto_grid_0
 
 main_kuramoto_grid_0: main_kuramoto.cpp
 	$(gcc) $(flags) -I $(boost) -c kuramoto_functions.cpp 
-	$(gcc) $(flags) -I $(boost) kuramoto_functions.o main_kuramoto.cpp -o main_kuramoto_grid_0
+	#$(gcc) $(flags) -I $(boost) kuramoto_functions.o main_kuramoto.cpp -o main_kuramoto_grid_0
 
 run:
 	time ./main_kuramoto_grid_0>Results/Testing_out.txt Sim_Settings/set_case9_sp_.txt
