@@ -1,11 +1,14 @@
+import matplotlib.style
+matplotlib.style.use('classic')
 import kuramoto_graphic
 import stead_results
 
+
 def main():
-	result_file = "Results/out_qr_sm_net_3_deltd_0.5_0_k_8.000000_.txt"
+	result_file = "Results/out_rd_sm_net_0_deltd_0.5_1017_k_1.000000_.txt"
 
 	# # For time evolution:
-	stead_points = 200
+	stead_points = 100
 	wrap_pi = True
 	kuramoto_graphic.plot_time_evolution(result_file, stead_points, wrap_pi)
 
