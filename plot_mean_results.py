@@ -1,3 +1,5 @@
+import matplotlib.style
+matplotlib.style.use('classic')
 import matplotlib
 matplotlib.use("pdf")
 from matplotlib import pyplot as plt
@@ -9,10 +11,10 @@ from glob import glob
 def main():
 
 	deltas_d = [5.0]
-	legends_list = ["SP"] 
-	netkindes = ["C9"]
+	legends_list = ["Colombia"] 
+	netkindes = ["col"]
 
-	colors = plt.cm.viridis(np.linspace(0.2, 0.9,3))
+	colors = plt.cm.plasma(np.linspace(0.2, 0.9,3))
 	markers = ["*", "d", "o"]
 	
 
@@ -79,30 +81,30 @@ def main():
 			R_imag_inf_std = np.std(complete_mean_rimag, axis = 1)
 			V_inf_std = np.std(complete_mean_v, axis = 1)
 
-			ax1.scatter(complete_k, R_mag_inf_mean, marker = markers[kk], color = colors[kk], label = r"$\Delta_p = {}$".format(deltd), s = 3)
+			# ax1.scatter(complete_k, R_mag_inf_mean, marker = markers[kk], color = colors[kk], label = r"$\Delta_p = {}$".format(deltd), s = 15)
 			# ax1.errorbar(complete_k, R_mag_inf_mean, yerr = R_mag_inf_std, color = colors[kk])
 			
-			ax2.scatter(complete_k, V_inf_mean, marker = markers[kk], color = colors[kk], label = r"$\Delta_p = {}$".format(deltd), s = 3)
+			# ax2.scatter(complete_k, V_inf_mean, marker = markers[kk], color = colors[kk], label = r"$\Delta_p = {}$".format(deltd), s = 15)
 			# ax2.errorbar(complete_k, V_inf_mean, yerr = V_inf_std, color = colors[kk])
 			
-			ax3.scatter(complete_k, R_real_inf_mean, marker = markers[kk], color = colors[kk], label = r"$\Delta_p = {}$".format(deltd), s = 3)
+			# ax3.scatter(complete_k, R_real_inf_mean, marker = markers[kk], color = colors[kk], label = r"$\Delta_p = {}$".format(deltd), s = 15)
 			# ax3.errorbar(complete_k, R_real_inf_mean, yerr = R_real_inf_std, color = colors[kk])
 
-			ax4.scatter(complete_k, R_imag_inf_mean, marker = markers[kk], color = colors[kk], label = r"$\Delta_p = {}$".format(deltd), s = 3)
+			# ax4.scatter(complete_k, R_imag_inf_mean, marker = markers[kk], color = colors[kk], label = r"$\Delta_p = {}$".format(deltd), s = 15)
 			# ax4.errorbar(complete_k, R_imag_inf_mean, yerr = R_imag_inf_std, color = colors[kk])
 			
 
 			
-			# ax1.plot(complete_k, R_mag_inf_mean, marker = markers[kk], ms = 4, color = colors[kk], label = r"{}".format(legends_list[kk]))
+			ax1.plot(complete_k, R_mag_inf_mean, marker = markers[kk], ms = 8, color = colors[kk], label = r"{}".format(legends_list[kk]))
 			# # # ax1.errorbar(complete_k, R_mag_inf_mean, yerr = R_mag_inf_std, color = colors[kk])
 			
-			# ax2.plot(complete_k, V_inf_mean, marker = markers[kk], ms = 4, color = colors[kk], label = r"{}".format(legends_list[kk]))
+			ax2.plot(complete_k, V_inf_mean, marker = markers[kk], ms = 8, color = colors[kk], label = r"{}".format(legends_list[kk]))
 			# # # ax2.errorbar(complete_k, V_inf_mean, yerr = V_inf_std, color = colors[kk])
 			# # ax2.set_ylim([0, 0.2])
-			# ax3.plot(complete_k, R_real_inf_mean, marker = markers[kk], ms = 4, color = colors[kk], label = r"{}".format(legends_list[kk]))
+			ax3.plot(complete_k, R_real_inf_mean, marker = markers[kk], ms = 8, color = colors[kk], label = r"{}".format(legends_list[kk]))
 			# # # ax3.errorbar(complete_k, R_real_inf_mean, yerr = R_real_inf_std, color = colors[kk])
 			# # ax3.set_ylim([-0.3, 0.3])
-			# ax4.plot(complete_k, R_imag_inf_mean, marker = markers[kk], ms = 4, color = colors[kk], label = r"{}".format(legends_list[kk]))
+			ax4.plot(complete_k, R_imag_inf_mean, marker = markers[kk], ms = 8, color = colors[kk], label = r"{}".format(legends_list[kk]))
 			# # # ax4.errorbar(complete_k, R_imag_inf_mean, yerr = R_imag_inf_std, color = colors[kk])
 			
 
@@ -115,13 +117,14 @@ def main():
 		ax1.set_ylabel(r"$|r_\infty|$")
 		# ax1.set_xlabel(r"$\frac{K}{P_o}$")
 		ax1.set_ylim([0, 1])
-		ax2.set_ylim([0, 20])
+		ax2.set_ylim([0, 11])
+		ax2.set_yticks( np.arange(0, 11, 1) )
 		ax2.set_ylabel(r"$v_\infty$")
 
-		ax1.set_xlim([0, 4.0])
-		ax2.set_xlim([0, 4.0])
-		ax3.set_xlim([0, 4.0])
-		ax4.set_xlim([0, 4.0])
+		ax1.set_xlim([0, 10.0])
+		ax2.set_xlim([0, 10.0])
+		ax3.set_xlim([0, 10.0])
+		ax4.set_xlim([0, 10.0])
 
 		# ax1.set_xlim([-2, 12])
 		#ax2.set_xlim([0, 10])
@@ -135,10 +138,10 @@ def main():
 		ax4.set_ylabel(r"$I\!Im [r_\infty]$")
 		# ax4.set_xlabel(r"$\frac{K}{P_o}$")
 
-		ax1.set_xlabel(r"$\frac{Z}{Z_o}$")
-		ax2.set_xlabel(r"$\frac{Z}{Z_o}$")
-		ax3.set_xlabel(r"$\frac{Z}{Z_o}$")
-		ax4.set_xlabel(r"$\frac{Z}{Z_o}$")
+		ax1.set_xlabel(r"$\frac{\hat Y}{Y_o}$")
+		ax2.set_xlabel(r"$\frac{\hat Y}{Y_o}$")
+		ax3.set_xlabel(r"$\frac{\hat Y}{Y_o}$")
+		ax4.set_xlabel(r"$\frac{\hat Y}{Y_o}$")
 
 
 

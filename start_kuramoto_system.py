@@ -259,9 +259,12 @@ def create_simulation_files(type_net, dyn_model, net_name, init_ang, init_vel, t
 		mk_graph.build_quasiregular_graph(N, consumers, net_name, P, P_disturbed, alf, delt_d, to_plot_net)
 	elif (type_net == "2n"):
 		mk_graph.build_2node_graph(net_name, P, P_disturbed, alf, to_plot_net)
+	elif (type_net == "col"):
+		mk_graph.build_colombian_graph(net_name, to_plot_net)
 	elif (type_net[0:4] == "case"):
 		mk_graph.build_gridcase_graph(net_name, type_net, dyn_model, ref_freq, kini, kfin, kstep, mag_d, re_d, im_d, init_vel, to_plot_net)
 		
+
 	if (type_net[0:4] == "case"):
 		k_actual = kini
 		while (k_actual <= kfin):

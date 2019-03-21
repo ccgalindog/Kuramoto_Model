@@ -1,0 +1,3 @@
+Simulation finished !! 
+Network: Networks/col_net_0__
+Initial State: Initial_States/initstate_col_net_0_0__

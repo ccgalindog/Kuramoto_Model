@@ -421,6 +421,87 @@ def build_smallworld_graph(nodes, neighbors, pth, net_name, powers, powers_distu
 
 
 
+def build_colombian_graph(net_name, to_plot):
+	'''
+	Create a Wattss-Strogatz graph where nodes are located initially in a ring connected to some amount neighbors and then connections are relinked with some probability pth.
+	INPUT:
+	nodes: <Int> - Total amount of nodes.
+	neighbors: <Int> - Amount of initial neighbors for each node in the ring. 
+	pth: <Double> - Rewiring probability.
+	net_name: <String> - Name of the network. 
+	powers: <List> - Default power at each node.
+	powers_disturb: <List> - Power at each node after a disturbance.
+	alfas: <List> - Damping at each node.
+	delt_d: <Double> - Fraction of generator nodes that are assigned as 'small generators'.
+	to_plot: <Boolean> - If want to plot the output graph.
+	OUTPUT:
+	A text file at Networks folder.
+	'''
+	K = np.loadtxt('params_COL/K_Colombia.txt')
+	P = np.loadtxt('params_COL/P_Colombia.txt')
+	Alf = np.loadtxt('params_COL/alf_Colombia.txt')
+
+	IM_Grapho = nx.from_numpy_matrix(K)
+
+	N = len(P)
+	link_list = np.sum(K != 0)
+
+
+	out_file = "Networks/" + net_name + "_.txt"
+	file = open(out_file,"w") 
+	file.write("{} {} \n".format(N, link_list)) # Nodes Links
+	file.write("K \n")
+	for i in range(len(P)):
+		for j in range(len(P)):
+			if ( K[i][j] != 0 ):
+				file.write("{} {} {} \n".format( i, j, K[i][j] ))
+
+	file.write("P \n")
+	for i in range(len(P)):
+		if (P[i] > 0):
+			file.write("{} {} {} {} \n".format(i, 1, P[i], P[i])) 
+		else:
+			file.write("{} {} {} {} \n".format(i, 0, P[i], P[i])) 
+
+	file.write("Alfa \n")
+	for i in range(len(Alf)):
+		file.write("{} {} \n".format(i, Alf[i])) 	
+	file.close() 
+
+
+	if (to_plot):
+		fr = plt.figure(figsize=(8,8))
+		ax1 = fr.add_subplot(111)
+		big_gen_list = list()
+		small_gen_list = list()
+		consumer_list = list()
+
+		for a_node in range(len(P)):
+			if (P[a_node] <= 0.0):
+				consumer_list.append(a_node)
+			else:
+				big_gen_list.append(a_node)
+
+		pos=nx.spring_layout(IM_Grapho)
+		nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=big_gen_list, node_color='crimson', node_size=100, alpha=0.9, label = "Big Generators")
+		nx.draw_networkx_nodes(IM_Grapho, pos, nodelist=consumer_list, node_color='indigo', node_size=50, alpha=0.9, label = "Consumers")
+		plt.legend(loc="best", scatterpoints=1)
+		nx.draw_networkx_edges(IM_Grapho, pos, width=1.0,alpha=0.5)
+		ax1.set_xticklabels('')
+		ax1.set_yticklabels('')
+		ax1.tick_params(axis='both', which='both', length = 0, bottom=False, top=False, labelbottom=False)
+		plt.tight_layout()
+		fr.savefig("Images/" + net_name + "_.pdf", bbox_inches='tight')
+		plt.close()
+
+		
+
+
+
+
+#############################################################################################
+
+
 def kuramoto_weight(x0, P, K, Gamm):
 	dot_theta = P + np.sum( K * np.sin( np.repeat(np.array([x0]).T, len(x0), axis=1) - np.repeat(np.array([x0]), len(x0), axis=0) + Gamm), axis=0 )
 	v_sqrd = np.linalg.norm(dot_theta)
