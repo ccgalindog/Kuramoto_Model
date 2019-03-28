@@ -5,18 +5,18 @@ import stead_results
 
 
 def main():
-	result_file = "Results/out_col_net_0_0_k_1.000000_.txt"
+	result_file = "Results/out_col_net_0_0_k_20.000000_.txt"
 
 	# # For time evolution:
-	# stead_points = 100
-	# wrap_pi = True
-	# kuramoto_graphic.plot_time_evolution(result_file, stead_points, wrap_pi)
+	stead_points = 100
+	wrap_pi = True
+	kuramoto_graphic.plot_time_evolution(result_file, stead_points, wrap_pi)
 
 	# # For steady state average results:
-	folders = ["Results/"]
-	mean_names = ["col"]
-	key_index = -2
-	stead_results.get_mean_results(300, 0.01, 10, folders, mean_names, key_index)
+	# folders = ["Results/"]
+	# mean_names = ["col"]
+	# key_index = -2
+	# stead_results.get_mean_results(300, 0.01, 10, folders, mean_names, key_index)
 
 	# For Gifs:
 	# out_name = "To_Gif/some_gif.gif"
