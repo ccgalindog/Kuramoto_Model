@@ -1,11 +1,11 @@
 T_ini: 0 
-T_fin: 100 
-Print_steps: 100 
-T_max_step: 0.001 
+T_fin: 500 
+Print_steps: 10 
+T_max_step: 0.01 
 T_disturb: 100000 
 T_recover: 100000 
 K_ini: 0 
-K_fin: 10 
+K_fin: 20 
 K_step: 1 
 Network_file: Networks/col_net_0_.txt 
 Initial_state_file: Initial_States/initstate_col_net_0_0_.txt 

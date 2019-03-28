@@ -437,14 +437,17 @@ def build_colombian_graph(net_name, to_plot):
 	OUTPUT:
 	A text file at Networks folder.
 	'''
-	K = np.loadtxt('params_COL/K_Colombia.txt')
-	P = np.loadtxt('params_COL/P_Colombia.txt')
-	Alf = np.loadtxt('params_COL/alf_Colombia.txt')
+	K = np.loadtxt('params_COL/K_Colombia_pu.txt')
+	P = np.loadtxt('params_COL/P_Colombia_pu.txt')
+	#Alf = np.abs( np.loadtxt('params_COL/alf_Colombia_pu.txt') )
+
+	Alf = 0.1*np.ones( P.shape )
 
 	IM_Grapho = nx.from_numpy_matrix(K)
 
 	N = len(P)
 	link_list = np.sum(K != 0)
+
 
 
 	out_file = "Networks/" + net_name + "_.txt"
@@ -465,7 +468,7 @@ def build_colombian_graph(net_name, to_plot):
 
 	file.write("Alfa \n")
 	for i in range(len(Alf)):
-		file.write("{} {} \n".format(i, Alf[i])) 	
+		file.write("{} {} \n".format(i, abs(Alf[i]))) 	
 	file.close() 
 
 

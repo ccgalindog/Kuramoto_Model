@@ -117,14 +117,14 @@ def main():
 		ax1.set_ylabel(r"$|r_\infty|$")
 		# ax1.set_xlabel(r"$\frac{K}{P_o}$")
 		ax1.set_ylim([0, 1])
-		ax2.set_ylim([0, 11])
-		ax2.set_yticks( np.arange(0, 11, 1) )
+		#ax2.set_ylim([0, 11])
+		#ax2.set_yticks( np.arange(0, 11, 1) )
 		ax2.set_ylabel(r"$v_\infty$")
 
-		ax1.set_xlim([0, 10.0])
-		ax2.set_xlim([0, 10.0])
-		ax3.set_xlim([0, 10.0])
-		ax4.set_xlim([0, 10.0])
+		ax1.set_xlim([0, 20.0])
+		ax2.set_xlim([0, 20.0])
+		ax3.set_xlim([0, 20.0])
+		ax4.set_xlim([0, 20.0])
 
 		# ax1.set_xlim([-2, 12])
 		#ax2.set_xlim([0, 10])
@@ -151,7 +151,7 @@ def main():
 		ax3.grid()
 		ax4.grid()
 		plt.tight_layout()
-		plt.savefig("Images/" + outname + "_meanresults_{}_sp_varying_mag_case_.pdf".format(columns))
+		plt.savefig("Images/" + outname + "_meanresults_{}_sm_varying_mag_case_.pdf".format(columns))
 		plt.close()	
 
 
