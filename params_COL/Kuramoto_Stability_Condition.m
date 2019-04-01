@@ -48,7 +48,7 @@ global N omega
 % 
 
 
-A = 12.*dlmread('K_Colombia_pu.txt');
+A = 1.*dlmread('K_Colombia_pu.txt');
 omega = dlmread('P_Colombia_pu.txt');
 N = length(omega);
 
@@ -76,7 +76,7 @@ thetaSteady = Lcross*omega;
 % Calculo la peor distancia del estado estacionario
 % que es la que cuyo seno debe ser menor que 1 en el 
 % caso de Kuramoto para ser estable.
-theta_diff_worst = norm(B'*thetaSteady,Inf);
+theta_diff_worst = norm(B'*thetaSteady,Inf)
 
 
 
