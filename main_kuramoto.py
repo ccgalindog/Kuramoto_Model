@@ -53,9 +53,7 @@ def synch_condition( K, w ):
 
 	#print( nx.laplacian_matrix( G ).todense() )
 	
-	B = nx.incidence_matrix( G ).todense()
-
-	#print( B )
+	B = nx.incidence_matrix( G, oriented = True ).todense()
 
 	theta_ss = np.matmul(L_dagger, w) 
 	max_diff = np.linalg.norm( np.matmul( B.T, theta_ss.T ), np.inf )
@@ -65,18 +63,19 @@ def synch_condition( K, w ):
 
 @click.command()
 @click.option('--k_ij', default = 1.0, help = 'Amplification factor for coupling matrix.')
+@click.option('--to_plot', default = False, help = 'Plot phase and phase velocity evolution.')
+@click.option('--wrap_pi', default = True, help = 'Plot phase evolution in [-pi, pi] range.')
 
 
-def main(k_ij):
+def main(k_ij, to_plot, wrap_pi):
 
 	K = k_ij*np.loadtxt( 'params_COL/K_Colombia_pu.txt' )
 	P = np.loadtxt( 'params_COL/P_Colombia_pu.txt' )
 	#Alf = np.loadtxt( 'params_COL/alf_Colombia_pu.txt' )
 	Alf = 0.1*np.ones( P.shape )
 	N = len(P)
-	wrap_pi = True
-	to_plot = False
-	
+	points_max = 1000
+	t_fin = 100 
 
 	start_time = time.time()
 
@@ -85,8 +84,7 @@ def main(k_ij):
 
 	print( max_diff, k_ij/max_diff )
 
-	points_max = 1000
-	t = np.linspace(0, 100, points_max)
+	t = np.linspace(0, t_fin, points_max)
 
 	x0 = np.concatenate((theta_ss, 0*theta_ss), axis=1).T
 	y0 = x0.flatten()
@@ -124,7 +122,7 @@ def main(k_ij):
 		#plt.ylim([-20,20])
 		plt.show()
 
-	print( end_time - start_time )
+	print( 'Execution time:', end_time - start_time )
 
 if __name__ == '__main__':
 	main()
