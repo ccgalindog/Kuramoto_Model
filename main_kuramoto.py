@@ -16,6 +16,7 @@ from scipy.sparse import csr_matrix
 from scipy.optimize import minimize
 import grid_cases as gridcase
 from scipy.integrate import odeint
+from scipy.integrate import ode
 from scipy.interpolate import griddata
 import matplotlib.colors as colors
 from mpl_toolkits.mplot3d import Axes3D
@@ -24,7 +25,7 @@ import time
 from numba import jit
 
 #@jit
-def kuramoto_2nd_order( x, t, P, K, alfs ):
+def kuramoto_2nd_order( t, x, P, K, alfs ):
 	N = int(len( P ))
 	theta = x[:N]
 	dot_theta = x[N:]
@@ -53,26 +54,38 @@ def synch_condition( K, w ):
 	return k_crit, x0
 
 @jit
-def coupling_sweep(t_fin, points_ode, x0, k_ini, k_end, k_step, stead_time, K, P, Alf, to_plot, wrap_pi):
+def coupling_sweep(t_fin, points_ode, k_ini, k_end, k_step, stead_time, K, P, Alf, to_plot, wrap_pi):
 	start_time = time.time()
 	t = np.linspace(0, t_fin, points_ode)
 	N = len(P)
 	stead_results = list()
 
-	stead_lim = int(np.floor(stead_time*(points_ode/t_fin)))
-
-	x0_prime = x0
-
 
 	for kvar in np.arange( k_ini, k_end, k_step ): 
-
-		if (kvar <= 1.0):
-			x0 = x0_prime
-
+		
 		print( 'Progress: ', 100*(kvar - k_ini)/(k_end - k_ini), ' %' )
 
 		K_new = kvar*K
-		states = odeint( kuramoto_2nd_order, x0, t, args=(P, K_new, Alf) )
+		k_crit, x0 = synch_condition( K_new, P )
+
+		solver = ode( kuramoto_2nd_order )
+		solver.set_integrator('vode', method = 'bdf', order = 5, nsteps=3000)
+		solver.set_f_params(P, K_new, Alf)
+		solver.set_initial_value(x0, 0)
+
+		i = 0
+		states = []
+		t = []
+		while solver.successful() and solver.t < t_fin:
+			solver.integrate(1, step=True) #1e-1 -> 2200s
+			states.append( solver.y )
+			t.append(solver.t)
+			i += 1
+
+		t = np.array(t)
+		states = np.array(states)
+
+
 
 		if (wrap_pi):
 			phases = ( states[:,0:N] + np.pi) % (2 * np.pi ) - np.pi
@@ -90,9 +103,9 @@ def coupling_sweep(t_fin, points_ode, x0, k_ini, k_end, k_step, stead_time, K, P
 		avg_vel = np.sqrt( np.mean( np.square(phase_vels) , axis = 1 ) )
 
 
-		stead_re_r = np.mean( re_r[ stead_lim : -1 ] )
-		stead_mag_r = np.mean( mag_r[ stead_lim : -1 ] )
-		stead_avg_vel = np.mean( avg_vel[ stead_lim : -1 ] )
+		stead_re_r = np.mean( re_r[ t > stead_time ] )
+		stead_mag_r = np.mean( mag_r[ t > stead_time ] )
+		stead_avg_vel = np.mean( avg_vel[ t > stead_time ] )
 
 		stead_results.append( np.array([ kvar, stead_mag_r, stead_re_r, stead_avg_vel]) )
 
@@ -136,34 +149,32 @@ def coupling_sweep(t_fin, points_ode, x0, k_ini, k_end, k_step, stead_time, K, P
 			plt.show()
 
 
-		t = np.linspace((stead_time/2), t_fin, points_ode-np.floor(stead_lim/2))
-
 
 
 	stead_results = np.array( stead_results )
-	np.savetxt('Results/mean_col_sweep_1.txt', stead_results)
+	np.savetxt('Results/mean_col_sweep_2.txt', stead_results)
 
 
 	plt.figure()
 	plt.plot( stead_results[:,0], stead_results[:,1], linewidth = 2, marker = 's', color = 'indigo' )
-	plt.xlabel(r'$t ~~~ \rm{[s]}$')
+	plt.xlabel(r'$c$')
 	plt.ylabel(r"$|r_{(t)}|$")
 	plt.grid()
-	plt.savefig('Images_2/col_magr_.pdf')
+	plt.savefig('Images_2/col_magr_2.pdf')
 	plt.show()
 	plt.figure()
 	plt.plot( stead_results[:,0], stead_results[:,2], linewidth = 2, marker = 's', color = 'gold' )
-	plt.xlabel(r'$t ~~~ \rm{[s]}$')
+	plt.xlabel(r'$c$')
 	plt.ylabel(r"$I\!Re [r_{(t)}]$")
 	plt.grid()
-	plt.savefig('Images_2/col_rer_.pdf')
+	plt.savefig('Images_2/col_rer_2.pdf')
 	plt.show()
 	plt.figure()
 	plt.plot( stead_results[:,0], stead_results[:,3], linewidth = 2, marker = 's', color = 'teal' )
-	plt.xlabel(r'$t ~~~ \rm{[s]}$')
+	plt.xlabel(r'$c$')
 	plt.ylabel(r'$v_{\infty}$')
 	plt.grid()
-	plt.savefig('Images_2/col_vinf_.pdf')
+	plt.savefig('Images_2/col_vinf_2.pdf')
 	plt.show()
 	
 
@@ -187,15 +198,14 @@ def main(k_ini, k_end, k_step, to_plot, wrap_pi):
 	#Alf = np.loadtxt( 'params_COL/alf_Colombia_pu.txt' )
 	Alf = 0.1*np.ones( P.shape )
 	points_ode = 25000
-	t_fin = 500 
-	stead_time = 300
+	t_fin = 300 
+	stead_time = 200
 
 	k_crit, x0 = synch_condition( K, P )
 
-	print( k_crit, k_ini/k_crit )
+	print('K_crit: ', k_crit)
 
-
-	coupling_sweep(t_fin, points_ode, x0, k_ini, k_end, k_step, stead_time, K, P, Alf, to_plot, wrap_pi)
+	coupling_sweep(t_fin, points_ode, k_ini, k_end, k_step, stead_time, K, P, Alf, to_plot, wrap_pi)
 
 
 if __name__ == '__main__':
