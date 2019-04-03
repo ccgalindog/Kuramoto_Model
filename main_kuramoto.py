@@ -22,9 +22,9 @@ import matplotlib.colors as colors
 from mpl_toolkits.mplot3d import Axes3D
 import click
 import time
-from numba import jit
+from numba import autojit
 
-#@jit
+#@autojit
 def kuramoto_2nd_order( t, x, P, K, alfs ):
 	N = int(len( P ))
 	theta = x[:N]
@@ -35,7 +35,7 @@ def kuramoto_2nd_order( t, x, P, K, alfs ):
 
 	return dotdot_theta
 
-#@jit
+#@autojit
 def synch_condition( K, w ):
 	'''
 	Returns an approximation to the critical coupling and to the steady state
@@ -53,7 +53,7 @@ def synch_condition( K, w ):
 
 	return k_crit, x0
 
-@jit
+#@autojit
 def coupling_sweep(t_fin, points_ode, k_ini, k_end, k_step, stead_time, K, P, Alf, to_plot, wrap_pi):
 	start_time = time.time()
 	t = np.linspace(0, t_fin, points_ode)
