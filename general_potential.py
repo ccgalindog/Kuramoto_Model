@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib.style
+matplotlib.style.use('classic')
 from matplotlib import pyplot as plt
 
 def potential_energy(P, K, phases):
@@ -91,8 +93,8 @@ def cyclic_triangular_net():
 	
 def main():
 	# Run triangular net example:
-	#cyclic_triangular_net()
-	modified_triangular_net()
+	cyclic_triangular_net()
+	#modified_triangular_net()
 	# res_file = "Results/out_case9_sm_net_0_mag_1.0_kinit_1_k_1.000000_.txt"
 	# net_file = "Networks/case9_sm_net_0_mag_1.0_kinit_1_.txt"
 	# res_file = "Results/out_rd_sm_net_0_deltd_0.5_400_k_1.000000_.txt"
