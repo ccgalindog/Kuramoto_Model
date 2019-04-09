@@ -6,9 +6,9 @@ from matplotlib import pyplot as plt
 
 def main():
 
-	stead_results = np.loadtxt( 'Results/mean_col_sweep_1.txt' )
+	stead_results = np.loadtxt( 'Results/mean_col_sweep_2.txt' )
 
-	c_crit = 1.338
+	c_crit = 1.412
 
 	fig = plt.figure()
 	ax = fig.add_subplot(111)

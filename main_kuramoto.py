@@ -152,7 +152,7 @@ def coupling_sweep(t_fin, points_ode, k_ini, k_end, k_step, stead_time, K, P, Al
 
 
 	stead_results = np.array( stead_results )
-	np.savetxt('Results/mean_col_sweep_2.txt', stead_results)
+	np.savetxt('Results/mean_col_sweep_3.txt', stead_results)
 
 
 	plt.figure()
