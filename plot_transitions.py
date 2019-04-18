@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 
 def main():
 
-	stead_results = np.loadtxt( 'Results/mean_col_sweep_2.txt' )
+	stead_results = np.loadtxt( 'Results/mean_col_sweep_BW.txt' )
 
 	c_crit = 1.412
 
@@ -21,7 +21,7 @@ def main():
 	ax.set_xlabel(r'$c$')
 	ax.set_ylabel(r"$|r_{(t)}|$")
 	plt.grid()
-	plt.savefig('Images_2/col_magr_.pdf')
+	plt.savefig('Images_2/col_magr_bw.pdf')
 	plt.show()
 	plt.close()
 
@@ -36,7 +36,7 @@ def main():
 	ax.set_xlabel(r'$c$')
 	ax.set_ylabel(r"$I\!Re [r_{(t)}]$")
 	plt.grid()
-	plt.savefig('Images_2/col_rer_.pdf')
+	plt.savefig('Images_2/col_rer_bw.pdf')
 	plt.show()
 	plt.close()
 
@@ -52,7 +52,7 @@ def main():
 	ax.set_xlabel(r'$c$')
 	ax.set_ylabel(r'$v_{\infty}$' + '   ' + r'$\rm{[\frac{rad}{s}]}$')
 	plt.grid()
-	plt.savefig('Images_2/col_vinf_.pdf')
+	plt.savefig('Images_2/col_vinf_bw.pdf')
 	plt.show()
 	plt.close()
 

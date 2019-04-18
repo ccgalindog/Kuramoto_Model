@@ -54,9 +54,8 @@ def synch_condition( K, w ):
 	return k_crit, x0
 
 #@autojit
-def coupling_sweep(t_fin, points_ode, k_ini, k_end, k_step, stead_time, K, P, Alf, to_plot, wrap_pi):
+def coupling_sweep(t_fin, k_ini, k_end, k_step, stead_time, K, P, Alf, to_plot, wrap_pi):
 	start_time = time.time()
-	t = np.linspace(0, t_fin, points_ode)
 	N = len(P)
 	stead_results = list()
 
@@ -152,7 +151,7 @@ def coupling_sweep(t_fin, points_ode, k_ini, k_end, k_step, stead_time, K, P, Al
 
 
 	stead_results = np.array( stead_results )
-	np.savetxt('Results/mean_col_sweep_3.txt', stead_results)
+	np.savetxt('Results/mean_col_sweep_BW.txt', stead_results)
 
 
 	plt.figure()
@@ -197,7 +196,6 @@ def main(k_ini, k_end, k_step, to_plot, wrap_pi):
 	P = np.loadtxt( 'params_COL/P_Colombia_pu.txt' )
 	#Alf = np.loadtxt( 'params_COL/alf_Colombia_pu.txt' )
 	Alf = 0.1*np.ones( P.shape )
-	points_ode = 25000
 	t_fin = 300 
 	stead_time = 200
 
@@ -205,7 +203,7 @@ def main(k_ini, k_end, k_step, to_plot, wrap_pi):
 
 	print('K_crit: ', k_crit)
 
-	coupling_sweep(t_fin, points_ode, k_ini, k_end, k_step, stead_time, K, P, Alf, to_plot, wrap_pi)
+	coupling_sweep(t_fin, k_ini, k_end, k_step, stead_time, K, P, Alf, to_plot, wrap_pi)
 
 
 if __name__ == '__main__':
