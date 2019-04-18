@@ -29,17 +29,9 @@ import grid_cases as gridcase
 
 
 
-def build_2node_graph(net_name, powers, powers_disturb, alfas, to_plot):
+def build_2node_graph(net_name, powers, powers_disturb, alfas, to_plot, to_write):
 	'''
-	Create a Wattss-Strogatz graph where nodes are located initially in a ring connected to some amount neighbors and then connections are relinked with some probability pth.
-	INPUT:
-	net_name: <String> - Name of the network. 
-	powers: <List> (2 elements) - Default power at each node.
-	powers_disturb: <List> (2 elements) - Power at each node after a disturbance.
-	alfas: <List> (2 elements) - Damping at each node.
-	to_plot: <Boolean> - If want to plot the output graph.
-	OUTPUT:
-	A text file at Networks folder.
+	Creates a 2 node network.
 	'''
 	N = 2
 	K = np.array([[0, 1], [1, 0]])
@@ -57,19 +49,22 @@ def build_2node_graph(net_name, powers, powers_disturb, alfas, to_plot):
 
 	link_list = [[0, 1, 1], [1, 0, 1]]
 
-	out_file = "Networks/" + net_name + "_.txt"
-	file = open(out_file,"w") 
-	file.write("{} {} \n".format(N, len(link_list))) # Nodes Links
-	file.write("K \n")
-	for i in range(len(link_list)):
-		file.write("{} {} {} \n".format(link_list[i][0], link_list[i][1], link_list[i][2])) 
-	file.write("P \n")
-	for i in range(len(P)):
-		file.write("{} {} {} {} \n".format(P[i][0], P[i][1], P[i][2], P[i][3])) 
-	file.write("Alfa \n")
-	for i in range(len(alf)):
-		file.write("{} {} \n".format(alf[i][0], alf[i][1])) 	
-	file.close() 
+
+	if to_write:
+
+		out_file = "Networks/" + net_name + "_.txt"
+		file = open(out_file,"w") 
+		file.write("{} {} \n".format(N, len(link_list))) # Nodes Links
+		file.write("K \n")
+		for i in range(len(link_list)):
+			file.write("{} {} {} \n".format(link_list[i][0], link_list[i][1], link_list[i][2])) 
+		file.write("P \n")
+		for i in range(len(P)):
+			file.write("{} {} {} {} \n".format(P[i][0], P[i][1], P[i][2], P[i][3])) 
+		file.write("Alfa \n")
+		for i in range(len(alf)):
+			file.write("{} {} \n".format(alf[i][0], alf[i][1])) 	
+		file.close() 
 
 	if (to_plot):
 		fr = plt.figure(figsize=(8,8))
@@ -97,13 +92,13 @@ def build_2node_graph(net_name, powers, powers_disturb, alfas, to_plot):
 		fr.savefig("Images/" + net_name + "_.pdf", bbox_inches='tight')
 		plt.close()
 
-		
+	return K	
 		
 ##################################################
 
 
 
-def build_quasiregular_graph(nodes, consumers, net_name, powers, powers_disturb, alfas, delt_d, to_plot):
+def build_quasiregular_graph(nodes, consumers, net_name, powers, powers_disturb, alfas, delt_d, to_plot, to_write):
 	'''
 	Create a graph where consumers are located in a square lattice and generators are located randomly and connected to 4 nearest neighbours.
 	INPUT:
@@ -188,21 +183,25 @@ def build_quasiregular_graph(nodes, consumers, net_name, powers, powers_disturb,
 			if (K[node_i][node_j] != 0):
 				link_list.append([node_i, node_j, K[node_i][node_j]])
 
-	out_file = "Networks/" + net_name + "_.txt"
 
-	file = open(out_file,"w") 
-	file.write("{} {} \n".format(N, len(link_list))) # Nodes Links
-	file.write("K \n")
-	for i in range(len(link_list)):
-		file.write("{} {} {} \n".format(link_list[i][0], link_list[i][1], link_list[i][2])) 
-	file.write("P \n")
-	for i in range(len(P)):
-		file.write("{} {} {} {} \n".format(P[i][0], P[i][1], P[i][2], P[i][3])) 
-	file.write("Alfa \n")
-	for i in range(len(alf)):
-		file.write("{} {} \n".format(alf[i][0], alf[i][1])) 	
-	 
-	file.close() 
+	if to_write:
+
+		out_file = "Networks/" + net_name + "_.txt"
+
+		file = open(out_file,"w") 
+		file.write("{} {} \n".format(N, len(link_list))) # Nodes Links
+		file.write("K \n")
+		for i in range(len(link_list)):
+			file.write("{} {} {} \n".format(link_list[i][0], link_list[i][1], link_list[i][2])) 
+		file.write("P \n")
+		for i in range(len(P)):
+			file.write("{} {} {} {} \n".format(P[i][0], P[i][1], P[i][2], P[i][3])) 
+		file.write("Alfa \n")
+		for i in range(len(alf)):
+			file.write("{} {} \n".format(alf[i][0], alf[i][1])) 	
+		 
+		file.close() 
+
 
 	if (to_plot):
 		IM_Grapho = nx.from_numpy_matrix(K)
@@ -233,13 +232,13 @@ def build_quasiregular_graph(nodes, consumers, net_name, powers, powers_disturb,
 		fr.savefig("Images/" + net_name + "_.pdf", bbox_inches='tight')
 		plt.close()
 
-		
+	return K	
 				
 #####################################################################################
 
 
 
-def build_random_graph(nodes, m_degree, net_name, powers, powers_disturb, alfas, delt_d, to_plot):
+def build_random_graph(nodes, m_degree, net_name, powers, powers_disturb, alfas, delt_d, to_plot, to_write):
 	'''
 	Create a graph where consumers and generators are located randomly and connected with a mean node degree.
 	INPUT:
@@ -289,20 +288,25 @@ def build_random_graph(nodes, m_degree, net_name, powers, powers_disturb, alfas,
 			if (K[node_i][node_j] == 1):
 				link_list.append([node_i, node_j, 1])
 
-	out_file = "Networks/" + net_name + "_.txt"
-	file = open(out_file,"w") 
-	file.write("{} {} \n".format(N, len(link_list))) # Nodes Links
-	file.write("K \n")
-	for i in range(len(link_list)):
-		file.write("{} {} {} \n".format(link_list[i][0], link_list[i][1], link_list[i][2])) 
-	file.write("P \n")
-	for i in range(len(P)):
-		file.write("{} {} {} {} \n".format(P[i][0], P[i][1], P[i][2],  P[i][3])) 
-	file.write("Alfa \n")
-	for i in range(len(alf)):
-		file.write("{} {} \n".format(alf[i][0], alf[i][1])) 	
-	 
-	file.close() 
+
+	if to_write:				
+		out_file = "Networks/" + net_name + "_.txt"
+		file = open(out_file,"w") 
+		file.write("{} {} \n".format(N, len(link_list))) # Nodes Links
+		file.write("K \n")
+		for i in range(len(link_list)):
+			file.write("{} {} {} \n".format(link_list[i][0], link_list[i][1], link_list[i][2])) 
+		file.write("P \n")
+		for i in range(len(P)):
+			file.write("{} {} {} {} \n".format(P[i][0], P[i][1], P[i][2],  P[i][3])) 
+		file.write("Alfa \n")
+		for i in range(len(alf)):
+			file.write("{} {} \n".format(alf[i][0], alf[i][1])) 	
+		 
+		file.close() 
+
+
+
 	if (to_plot):
 		fr = plt.figure(figsize=(8,8))
 		ax1 = fr.add_subplot(111)
@@ -332,13 +336,13 @@ def build_random_graph(nodes, m_degree, net_name, powers, powers_disturb, alfas,
 		fr.savefig("Images/" + net_name + "_.pdf", bbox_inches='tight')
 		plt.close()
 
-
+	return K
 
 ####################################################################################################################
 
 
 
-def build_smallworld_graph(nodes, neighbors, pth, net_name, powers, powers_disturb, alfas, delt_d, to_plot):
+def build_smallworld_graph(nodes, neighbors, pth, net_name, powers, powers_disturb, alfas, delt_d, to_plot, to_write):
 	'''
 	Create a Wattss-Strogatz graph where nodes are located initially in a ring connected to some amount neighbors and then connections are relinked with some probability pth.
 	INPUT:
@@ -373,19 +377,21 @@ def build_smallworld_graph(nodes, neighbors, pth, net_name, powers, powers_distu
 			if (K[node_i, node_j] == 1):
 				link_list.append([node_i, node_j, 1])
 
-	out_file = "Networks/" + net_name + "_.txt"
-	file = open(out_file,"w") 
-	file.write("{} {} \n".format(N, len(link_list))) # Nodes Links
-	file.write("K \n")
-	for i in range(len(link_list)):
-		file.write("{} {} {} \n".format(link_list[i][0], link_list[i][1], link_list[i][2])) 
-	file.write("P \n")
-	for i in range(len(P)):
-		file.write("{} {} {} {} \n".format(P[i][0], P[i][1], P[i][2], P[i][3])) 
-	file.write("Alfa \n")
-	for i in range(len(alf)):
-		file.write("{} {} \n".format(alf[i][0], alf[i][1])) 	
-	file.close() 
+
+	if to_write:
+		out_file = "Networks/" + net_name + "_.txt"
+		file = open(out_file,"w") 
+		file.write("{} {} \n".format(N, len(link_list))) # Nodes Links
+		file.write("K \n")
+		for i in range(len(link_list)):
+			file.write("{} {} {} \n".format(link_list[i][0], link_list[i][1], link_list[i][2])) 
+		file.write("P \n")
+		for i in range(len(P)):
+			file.write("{} {} {} {} \n".format(P[i][0], P[i][1], P[i][2], P[i][3])) 
+		file.write("Alfa \n")
+		for i in range(len(alf)):
+			file.write("{} {} \n".format(alf[i][0], alf[i][1])) 	
+		file.close() 
 
 	if (to_plot):
 		fr = plt.figure(figsize=(8,8))
@@ -415,13 +421,13 @@ def build_smallworld_graph(nodes, neighbors, pth, net_name, powers, powers_distu
 		fr.savefig("Images/" + net_name + "_.pdf", bbox_inches='tight')
 		plt.close()
 
-		
+	return K
 		
 ############################################################################################################
 
 
 
-def build_colombian_graph(net_name, to_plot):
+def build_colombian_graph(net_name, to_plot, to_write):
 	'''
 	Create a Wattss-Strogatz graph where nodes are located initially in a ring connected to some amount neighbors and then connections are relinked with some probability pth.
 	INPUT:
@@ -449,27 +455,27 @@ def build_colombian_graph(net_name, to_plot):
 	link_list = np.sum(K != 0)
 
 
+	if to_write:
+		out_file = "Networks/" + net_name + "_.txt"
+		file = open(out_file,"w") 
+		file.write("{} {} \n".format(N, link_list)) # Nodes Links
+		file.write("K \n")
+		for i in range(len(P)):
+			for j in range(len(P)):
+				if ( K[i][j] != 0 ):
+					file.write("{} {} {} \n".format( i, j, K[i][j] ))
 
-	out_file = "Networks/" + net_name + "_.txt"
-	file = open(out_file,"w") 
-	file.write("{} {} \n".format(N, link_list)) # Nodes Links
-	file.write("K \n")
-	for i in range(len(P)):
-		for j in range(len(P)):
-			if ( K[i][j] != 0 ):
-				file.write("{} {} {} \n".format( i, j, K[i][j] ))
+		file.write("P \n")
+		for i in range(len(P)):
+			if (P[i] > 0):
+				file.write("{} {} {} {} \n".format(i, 1, P[i], P[i])) 
+			else:
+				file.write("{} {} {} {} \n".format(i, 0, P[i], P[i])) 
 
-	file.write("P \n")
-	for i in range(len(P)):
-		if (P[i] > 0):
-			file.write("{} {} {} {} \n".format(i, 1, P[i], P[i])) 
-		else:
-			file.write("{} {} {} {} \n".format(i, 0, P[i], P[i])) 
-
-	file.write("Alfa \n")
-	for i in range(len(Alf)):
-		file.write("{} {} \n".format(i, abs(Alf[i]))) 	
-	file.close() 
+		file.write("Alfa \n")
+		for i in range(len(Alf)):
+			file.write("{} {} \n".format(i, abs(Alf[i]))) 	
+		file.close() 
 
 
 	if (to_plot):
@@ -497,7 +503,7 @@ def build_colombian_graph(net_name, to_plot):
 		fr.savefig("Images/" + net_name + "_.pdf", bbox_inches='tight')
 		plt.close()
 
-		
+	return K	
 
 
 
@@ -766,7 +772,7 @@ def get_kuramoto_net(A, K_hat, Gamm, est_dyn, model, ref_freq, gtb):
 ####################################
 
 
-def build_gridcase_graph(net_name, case, model, ref_freq, k_alt_ini, k_alt_fin, k_alt_step, mag_d, re_d, im_d, start_speed, to_plot):
+def build_gridcase_graph(net_name, case, model, ref_freq, k_alt_ini, k_alt_fin, k_alt_step, mag_d, re_d, im_d, start_speed, to_plot, to_write):
 	'''
 	This function creates a graph from a real power grid given by a pypsa case 
 	INPUT:
@@ -817,32 +823,37 @@ def build_gridcase_graph(net_name, case, model, ref_freq, k_alt_ini, k_alt_fin, 
 					link_list.append([node_i, node_j, K[node_i, node_j]])
 				if (node_j != node_i) and (Gamm[node_i, node_j] != 0):	
 					gamma_list.append([node_i, node_j, Gamm[node_i, node_j]])
-		out_file = "Networks/" + net_name + "_.txt"
-		file = open(out_file,"w") 
-		file.write("{} {} {} \n".format(N, len(link_list), len(gamma_list))) # Nodes Links
-		file.write("K \n")
-		for i in range(len(link_list)):
-			file.write("{} {} {} \n".format(link_list[i][0], link_list[i][1], link_list[i][2])) 
-		file.write("P \n")
-		for i in range(len(P)):
-			file.write("{} {} {} {} \n".format(P[i][0], P[i][1], P[i][2], P[i][3])) 
-		file.write("Alfa \n")
-		for i in range(len(alf)):
-			file.write("{} {} \n".format(alf[i][0], alf[i][1])) 	
-		file.write("Gamma \n")
-		for i in range(len(gamma_list)):
-			file.write("{} {} {} \n".format(gamma_list[i][0], gamma_list[i][1], gamma_list[i][2])) 
-		file.close() 
-		out_file = "Initial_States/initstate_" + net_name + "_.txt"
-		file = open(out_file,"w") 
-		for i in range(len(phi)):
-			file.write("{}\n".format(phi[i])) 
-		for i in range(len(phi)):
-			if (start_speed == "zeros"):
-				file.write("{}\n".format(0.0))
-			elif (start_speed == "random"):
-				file.write("{}\n".format(2*np.random.random_sample() - 1))
-		file.close() 
+		
+		if to_write:
+
+			out_file = "Networks/" + net_name + "_.txt"
+			file = open(out_file,"w") 
+			file.write("{} {} {} \n".format(N, len(link_list), len(gamma_list))) # Nodes Links
+			file.write("K \n")
+			for i in range(len(link_list)):
+				file.write("{} {} {} \n".format(link_list[i][0], link_list[i][1], link_list[i][2])) 
+			file.write("P \n")
+			for i in range(len(P)):
+				file.write("{} {} {} {} \n".format(P[i][0], P[i][1], P[i][2], P[i][3])) 
+			file.write("Alfa \n")
+			for i in range(len(alf)):
+				file.write("{} {} \n".format(alf[i][0], alf[i][1])) 	
+			file.write("Gamma \n")
+			for i in range(len(gamma_list)):
+				file.write("{} {} {} \n".format(gamma_list[i][0], gamma_list[i][1], gamma_list[i][2])) 
+			file.close() 
+			out_file = "Initial_States/initstate_" + net_name + "_.txt"
+			file = open(out_file,"w") 
+			for i in range(len(phi)):
+				file.write("{}\n".format(phi[i])) 
+			for i in range(len(phi)):
+				if (start_speed == "zeros"):
+					file.write("{}\n".format(0.0))
+				elif (start_speed == "random"):
+					file.write("{}\n".format(2*np.random.random_sample() - 1))
+			file.close() 
+
+
 		IM_Grapho = nx.from_numpy_matrix(K)
 		fr = plt.figure(figsize=(8,8))
 		ax1 = fr.add_subplot(111)
@@ -871,6 +882,7 @@ def build_gridcase_graph(net_name, case, model, ref_freq, k_alt_ini, k_alt_fin, 
 		k_act = k_act + k_alt_step
 
 
+	return K
 
 
 
